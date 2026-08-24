@@ -1,0 +1,4541 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VyomSat Alpha Ground Station &middot; Mission Console</title>
+
+  <!-- Primary Meta Tags -->
+  <meta name="description" content="VyomSat Alpha Ground Station is a browser-based mission console for USB telemetry, one-character spacecraft commands, parsed health data and live GPS visualization.">
+  <meta name="keywords" content="VyomSat Alpha, ground station, mission console, CubeSat telemetry, Web Serial, USB telemetry, XBee, spacecraft commands, satellite GPS, aerospace education">
+  <meta name="author" content="Ojas Jha">
+  <meta name="robots" content="index, follow">
+  <meta name="language" content="English">
+  <meta name="category" content="Space, Education, Ground Station">
+  <meta name="theme-color" content="#FF6D00">
+  <meta name="color-scheme" content="dark">
+
+  <link rel="canonical" href="https://www.vyomsat.com/docs/vyomsat-alpha-ground-station.html">
+
+  <!-- Favicon & App Icons -->
+  <link rel="icon" type="image/x-icon" href="https://www.vyomsat.com/assets/images/favicon/favicon.ico">
+  <link rel="icon" type="image/png" sizes="16x16" href="https://www.vyomsat.com/assets/images/favicon/favicon-16x16.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://www.vyomsat.com/assets/images/favicon/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="https://www.vyomsat.com/assets/images/favicon/favicon-192x192.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="https://www.vyomsat.com/assets/images/favicon/apple-touch-icon.png">
+  <meta name="msapplication-TileColor" content="#0B0D11">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="VyomSat Ground Station">
+  <meta name="application-name" content="VyomSat Alpha Ground Station">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.vyomsat.com/docs/vyomsat-alpha-ground-station.html">
+  <meta property="og:title" content="VyomSat Alpha Ground Station &middot; Mission Console">
+  <meta property="og:description" content="Connect, monitor and command VyomSat Alpha through a focused browser-based telemetry and mission operations console.">
+  <meta property="og:image" content="https://www.vyomsat.com/assets/images/meta/og-image-1200x630.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="VyomSat Alpha open-source aerospace education platform">
+  <meta property="og:site_name" content="VyomSat Alpha">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:see_also" content="https://github.com/vyomsat/vyomsat-alpha">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@vyomsat">
+  <meta name="twitter:creator" content="@ojasjha">
+  <meta name="twitter:title" content="VyomSat Alpha Ground Station &middot; Mission Console">
+  <meta name="twitter:description" content="USB telemetry, spacecraft commands, parsed health data and live GPS visualization for VyomSat Alpha.">
+  <meta name="twitter:image" content="https://www.vyomsat.com/assets/images/meta/og-image-1200x630.png">
+
+  <meta name="github:repo" content="https://github.com/vyomsat/vyomsat-alpha">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Orbitron:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /*
+      Style architecture
+      1. Design tokens and global foundations
+      2. Reusable controls, cards, terminal, telemetry, map, and dialogs
+      3. Full-screen dashboard composition and sidebar/dock variants
+      4. Responsive overrides, ordered from wider to narrower breakpoints
+
+      Component rules use class selectors; IDs are reserved for JavaScript and
+      accessibility relationships. Shared visual values belong in :root so new
+      widgets inherit the established theme instead of introducing one-off colors.
+    */
+
+    /* Design tokens */
+    :root {
+      color-scheme: dark;
+      --page: #0B0D11;
+      --panel: #161B22;
+      --panel-2: #1C2533;
+      --panel-3: #0D1117;
+      --line: #30363D;
+      --text: #F0F6FC;
+      --muted: #8B949E;
+      --orange: #FF6D00;
+      --orange-soft: rgba(255, 109, 0, 0.12);
+      --blue: #00A3FF;
+      --green: #3ECF8E;
+      --green-soft: rgba(62, 207, 142, 0.12);
+      --terminal-green: #76F28C;
+      --yellow: #F0B95C;
+      --red: #FF4D6D;
+      --violet: #B39BFF;
+      --teal: #3ECFB1;
+      --rose: #FF6B8A;
+      --brand-gradient: linear-gradient(135deg, var(--blue), var(--orange));
+      --surface-gradient: linear-gradient(180deg, rgba(0, 163, 255, 0.06) 0%, rgba(11, 13, 17, 0.5) 100%);
+      --glow-blue: rgba(0, 163, 255, 0.25);
+      --glow-orange: rgba(255, 109, 0, 0.25);
+      --widget-border: rgba(255, 109, 0, 0.22);
+      --widget-header-gradient: linear-gradient(180deg, rgba(74, 57, 55, 0.78) 0%, rgba(43, 37, 40, 0.88) 100%);
+      --shadow: 0 0 15px rgba(0, 163, 255, 0.12), 0 0 30px rgba(0, 163, 255, 0.06), 0 2px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Global foundations */
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background: var(--page);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      font-family: "Inter", Aptos, "Segoe UI", Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 9% 0%, rgba(255, 109, 0, 0.10), transparent 30rem),
+        radial-gradient(circle at 92% 8%, rgba(0, 163, 255, 0.10), transparent 34rem),
+        var(--page);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: "Orbitron", "Inter", sans-serif;
+    }
+
+    ::selection {
+      background: var(--blue);
+      color: var(--page);
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--page);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      border-radius: 4px;
+      background: var(--line);
+    }
+
+    .icon-sprite {
+      position: absolute;
+      width: 0;
+      height: 0;
+      overflow: hidden;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+    }
+
+    .app-shell {
+      width: min(1480px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 22px 0 30px;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 14px 18px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: linear-gradient(90deg, rgba(11, 13, 17, 0.94), rgba(22, 27, 34, 0.92) 45%, rgba(11, 17, 28, 0.93));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      min-width: 0;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      flex: 0 0 auto;
+    }
+
+    .brand-title {
+      margin: 0;
+      font-size: clamp(20px, 2vw, 28px);
+      font-weight: 700;
+      letter-spacing: 0.015em;
+      line-height: 1;
+      font-family: "Orbitron", "Inter", sans-serif;
+    }
+
+    .brand-title .vyom {
+      color: #d7dde7;
+      font-weight: 500;
+    }
+
+    .brand-title .sat {
+      color: var(--orange);
+      font-weight: 600;
+    }
+
+    .brand-title .alpha {
+      color: transparent;
+      background: var(--brand-gradient);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-subtitle {
+      margin: 5px 0 0;
+      color: var(--blue);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-family: "Orbitron", "Inter", sans-serif;
+    }
+
+    .topbar-controls {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      flex: 0 0 auto;
+    }
+
+    .topbar-controls .button {
+      min-height: 40px;
+      padding-inline: 14px;
+    }
+
+    .topbar-controls .icon-button {
+      width: 40px;
+      height: 40px;
+    }
+
+    .connection-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-width: max-content;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.035);
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+
+    .connection-pill.connected {
+      border-color: rgba(126, 231, 135, 0.38);
+      background: var(--green-soft);
+      color: var(--green);
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: #6f7d91;
+      box-shadow: 0 0 0 4px rgba(111, 125, 145, 0.13);
+    }
+
+    .connected .status-dot {
+      background: var(--green);
+      box-shadow: 0 0 0 4px rgba(62, 207, 142, 0.13), 0 0 17px rgba(62, 207, 142, 0.45);
+    }
+
+    .connection-text-compact {
+      display: none;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.65fr) minmax(360px, 0.65fr);
+      gap: 18px;
+      margin-top: 18px;
+    }
+
+    .card {
+      border: 1px solid var(--widget-border);
+      border-radius: 14px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      height: 64px;
+      min-height: 64px;
+      padding: 15px 17px;
+      border-bottom: 1px solid rgba(255, 109, 0, 0.22);
+      background:
+        linear-gradient(90deg, rgba(255, 109, 0, 0.055), transparent 32%, rgba(0, 163, 255, 0.025)),
+        var(--widget-header-gradient);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 7px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-header h2,
+    .card-header h3 {
+      max-width: 100%;
+      margin: 0;
+      overflow: hidden;
+      font-size: 15px;
+      letter-spacing: 0.015em;
+      font-family: "Orbitron", "Inter", sans-serif;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .card-header p {
+      max-width: 100%;
+      margin: 4px 0 0;
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 12px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .card-heading {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      flex: 1 1 auto;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .card-heading > div {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .card-header > .connection-pill,
+    .card-header > .future-badge,
+    .card-header > .terminal-toolbar {
+      flex: 0 0 auto;
+    }
+
+    .card-icon {
+      display: grid;
+      place-items: center;
+      width: 35px;
+      height: 35px;
+      flex: 0 0 auto;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 11px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 4px 14px rgba(0, 163, 255, 0.2);
+    }
+
+    .card-icon svg,
+    .metric-icon svg,
+    .command-icon svg,
+    .button-icon,
+    .icon-button svg,
+    .map-placeholder svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .card-icon-location {
+      color: #75c5ff;
+      background: linear-gradient(145deg, rgba(55, 150, 255, 0.3), rgba(56, 230, 185, 0.08));
+    }
+
+    .card-icon-telemetry {
+      color: #8df19b;
+      background: linear-gradient(145deg, rgba(64, 205, 112, 0.28), rgba(127, 103, 255, 0.09));
+    }
+
+    .card-icon-terminal {
+      color: #62C4FF;
+      background: linear-gradient(135deg, rgba(0, 163, 255, 0.30), rgba(255, 109, 0, 0.13));
+    }
+
+    .terminal-toolbar {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .toolbar-sample .button-icon { color: var(--violet); }
+    .toolbar-clear .button-icon { color: var(--rose); }
+    .toolbar-download .button-icon { color: var(--teal); }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 38px;
+      padding: 8px 13px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 700;
+      transition: transform 120ms ease, border-color 150ms ease, background 150ms ease, box-shadow 150ms ease, opacity 120ms ease;
+    }
+
+    .button:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    .button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 3px solid rgba(86, 168, 255, 0.32);
+      outline-offset: 2px;
+    }
+
+    .button:disabled {
+      cursor: not-allowed;
+      opacity: 0.42;
+    }
+
+    .button[hidden] {
+      display: none;
+    }
+
+    .button-primary {
+      background: var(--orange);
+      color: #fff;
+      box-shadow: 0 2px 10px rgba(255, 109, 0, 0.22);
+    }
+
+    .button-connect {
+      border-color: rgba(62, 207, 142, 0.5);
+      border-radius: 999px;
+      background: linear-gradient(135deg, #3ECF8E, #3ECFB1);
+      color: var(--page);
+      box-shadow: 0 2px 12px rgba(62, 207, 142, 0.28);
+    }
+
+    .button-disconnect {
+      border-color: rgba(255, 109, 0, 0.55);
+      border-radius: 999px;
+      background: linear-gradient(135deg, #FF6D00, #FF9B54);
+      color: var(--page);
+      box-shadow: 0 2px 12px rgba(255, 109, 0, 0.3);
+    }
+
+    .button-connect:hover:not(:disabled) {
+      box-shadow: 0 4px 20px rgba(62, 207, 142, 0.42);
+    }
+
+    .button-disconnect:hover:not(:disabled) {
+      box-shadow: 0 4px 20px rgba(255, 109, 0, 0.44);
+    }
+
+    #sendBtn {
+      border-radius: 999px;
+      background: var(--brand-gradient);
+      color: #fff;
+      box-shadow: 0 2px 12px rgba(0, 163, 255, 0.18), 0 2px 12px rgba(255, 109, 0, 0.22);
+    }
+
+    #sendBtn:hover:not(:disabled) {
+      box-shadow: 0 4px 20px rgba(0, 163, 255, 0.26), 0 4px 20px rgba(255, 109, 0, 0.34);
+    }
+
+    .button-secondary {
+      border-color: var(--line);
+      background: var(--panel-2);
+      color: var(--text);
+    }
+
+    .button-small {
+      min-height: 32px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 12px;
+    }
+
+    .terminal {
+      height: clamp(380px, 57vh, 680px);
+      overflow: auto;
+      padding: 14px 15px 18px;
+      background:
+        linear-gradient(rgba(126, 231, 135, 0.025) 1px, transparent 1px),
+        var(--panel-3);
+      background-size: 100% 24px;
+      font-family: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+      font-size: 12.5px;
+      line-height: 1.55;
+      scrollbar-color: #3a4c66 transparent;
+    }
+
+    .terminal-placeholder {
+      display: grid;
+      place-items: center;
+      min-height: 100%;
+      padding: 30px;
+      color: #74849b;
+      text-align: center;
+    }
+
+    .terminal-placeholder strong {
+      display: block;
+      margin-bottom: 7px;
+      color: #aebcd0;
+      font-size: 14px;
+    }
+
+    .terminal-line {
+      display: grid;
+      grid-template-columns: 13ch 4ch minmax(0, 1fr);
+      align-items: start;
+      gap: 8px;
+      min-width: 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .terminal.no-timestamps .terminal-line {
+      grid-template-columns: 4ch minmax(0, 1fr);
+    }
+
+    .terminal.no-timestamps .terminal-time {
+      display: none;
+    }
+
+    .terminal-time {
+      color: #738399;
+      white-space: nowrap;
+      overflow-wrap: normal;
+      font-variant-numeric: tabular-nums;
+      user-select: none;
+    }
+
+    .terminal-time-compact {
+      display: none;
+    }
+
+    .terminal-direction {
+      color: #708198;
+      font-weight: 800;
+      white-space: nowrap;
+      overflow-wrap: normal;
+      user-select: none;
+    }
+
+    .terminal-text {
+      color: var(--terminal-green);
+    }
+
+    .line-tx .terminal-direction,
+    .line-tx .terminal-text {
+      color: var(--blue);
+    }
+
+    .line-ack .terminal-text {
+      color: #a6f3a6;
+      font-weight: 700;
+    }
+
+    .line-nak .terminal-text,
+    .line-error .terminal-text {
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .line-system .terminal-text {
+      color: var(--yellow);
+    }
+
+    .composer {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      padding: 13px;
+      border-top: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .command-input {
+      width: 100%;
+      min-height: 42px;
+      padding: 9px 13px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel-3);
+      color: var(--text);
+      font-family: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+      font-size: 16px;
+    }
+
+    .command-input::placeholder {
+      color: #617088;
+    }
+
+    .quick-command-panel {
+      padding: 0 13px 14px;
+      border-top: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .quick-command-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .quick-tab,
+    .settings-tab {
+      position: relative;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .quick-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .quick-tab .button-icon {
+      width: 15px;
+      height: 15px;
+    }
+
+    .quick-tab:hover,
+    .settings-tab:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .quick-tab.active,
+    .settings-tab.active {
+      color: var(--orange);
+      background: var(--orange-soft);
+    }
+
+    .command-tab-panel {
+      display: none;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 9px;
+      padding-top: 11px;
+    }
+
+    .command-tab-panel.active {
+      display: grid;
+    }
+
+    .sidebar {
+      display: grid;
+      align-content: start;
+      gap: 18px;
+    }
+
+    .button-icon {
+      flex: 0 0 auto;
+    }
+
+    .icon-button {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      flex: 0 0 auto;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.035);
+      color: var(--muted);
+      cursor: pointer;
+      transition: color 120ms ease, border-color 120ms ease, background 120ms ease, transform 120ms ease;
+    }
+
+    .icon-button:hover {
+      color: var(--orange);
+      border-color: rgba(255, 121, 0, 0.5);
+      background: var(--orange-soft);
+      transform: rotate(12deg);
+    }
+
+    .icon-button svg {
+      width: 19px;
+      height: 19px;
+    }
+
+    .device-box {
+      margin-top: 12px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: #0c1524;
+    }
+
+    .device-title {
+      margin: 0;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .device-detail {
+      margin: 5px 0 0;
+      color: var(--muted);
+      font-family: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .link-path {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 12px;
+      overflow-x: auto;
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+      scrollbar-width: thin;
+    }
+
+    .link-node {
+      padding: 6px 8px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .link-arrow {
+      color: var(--orange);
+      font-weight: 800;
+    }
+
+    .settings-device-panel {
+      margin-bottom: 16px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: linear-gradient(145deg, rgba(86, 168, 255, 0.07), rgba(255, 121, 0, 0.035));
+    }
+
+    .settings-device-heading {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .settings-device-heading svg {
+      width: 18px;
+      height: 18px;
+      color: var(--blue);
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .settings-device-panel .device-box {
+      margin-top: 10px;
+    }
+
+    .command-button {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 54px;
+      padding: 10px 12px;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background: var(--panel-2);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 700;
+      text-align: left;
+      transition: transform 120ms ease, border-color 120ms ease, background 120ms ease;
+    }
+
+    .command-label {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 9px;
+    }
+
+    .command-copy {
+      min-width: 0;
+    }
+
+    .command-icon {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      flex: 0 0 auto;
+      border-radius: 9px;
+    }
+
+    .command-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .command-icon-blue { color: #57C0FF; background: rgba(0, 163, 255, 0.13); }
+    .command-icon-green { color: #6BE7A8; background: rgba(62, 207, 142, 0.13); }
+    .command-icon-orange { color: #FF9B54; background: rgba(255, 109, 0, 0.13); }
+    .command-icon-gold { color: #F0B95C; background: rgba(240, 185, 92, 0.13); }
+    .command-icon-violet { color: #B39BFF; background: rgba(179, 155, 255, 0.13); }
+    .command-icon-rose { color: #FF7F98; background: rgba(255, 107, 138, 0.13); }
+    .command-icon-teal { color: #58DEC3; background: rgba(62, 207, 177, 0.13); }
+
+    .command-button:hover:not(:disabled) {
+      transform: translateY(-1px);
+      border-color: rgba(255, 121, 0, 0.55);
+      background: var(--orange-soft);
+    }
+
+    .command-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    .command-button kbd {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border: 1px solid rgba(255, 121, 0, 0.34);
+      border-radius: 8px;
+      background: rgba(255, 121, 0, 0.09);
+      color: var(--orange);
+      font-family: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+      font-size: 15px;
+    }
+
+    .command-description {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 500;
+    }
+
+    .command-button.command-caution kbd {
+      border-color: rgba(255, 123, 114, 0.45);
+      background: rgba(255, 123, 114, 0.09);
+      color: #ffaaa4;
+    }
+
+    .settings-dialog {
+      width: min(760px, calc(100% - 28px));
+      max-height: min(800px, calc(100vh - 32px));
+      padding: 0;
+      border: 1px solid rgba(159, 184, 220, 0.28);
+      border-radius: 18px;
+      background: var(--panel);
+      color: var(--text);
+      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.58);
+      overflow: hidden;
+    }
+
+    .settings-dialog::backdrop {
+      background: rgba(3, 8, 17, 0.75);
+      backdrop-filter: blur(4px);
+    }
+
+    .settings-dialog form {
+      display: flex;
+      max-height: min(800px, calc(100vh - 32px));
+      flex-direction: column;
+    }
+
+    .dialog-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.018);
+    }
+
+    .dialog-header h2 {
+      margin: 0;
+      font-size: 17px;
+    }
+
+    .dialog-header p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .dialog-close {
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .settings-tabs {
+      display: flex;
+      gap: 4px;
+      padding: 10px 16px 0;
+      border-bottom: 1px solid var(--line);
+      overflow-x: auto;
+      background: #0d1727;
+    }
+
+    .settings-tab {
+      min-width: max-content;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .settings-panel-wrap {
+      min-height: 0;
+      padding: 17px 18px;
+      overflow: auto;
+    }
+
+    .settings-panel {
+      display: none;
+    }
+
+    .settings-panel.active {
+      display: block;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 13px;
+    }
+
+    .form-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .form-field > span,
+    .form-section-title {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 750;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+    }
+
+    .form-field input,
+    .form-field select {
+      width: 100%;
+      min-height: 40px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #0b1423;
+      color: var(--text);
+    }
+
+    .settings-checks {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px 13px;
+      margin-top: 15px;
+    }
+
+    .settings-check {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 38px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: #0b1423;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .settings-check input {
+      width: 17px;
+      height: 17px;
+      flex: 0 0 auto;
+      accent-color: var(--orange);
+    }
+
+    .settings-help {
+      margin: 14px 0 0;
+      color: #7e90a9;
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .serial-tools {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 14px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+    }
+
+    .control-status {
+      color: var(--muted);
+      font-family: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+      font-size: 10px;
+    }
+
+    .dialog-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 13px 18px;
+      border-top: 1px solid var(--line);
+      background: #0d1727;
+    }
+
+    .dialog-footer-actions {
+      display: flex;
+      gap: 9px;
+    }
+
+    .telemetry-card {
+      box-shadow: none;
+    }
+
+    .telemetry-card .card-header {
+      align-items: center;
+      padding: 12px 14px;
+    }
+
+    .telemetry-card .card-header p {
+      margin-top: 3px;
+      font-size: 10px;
+    }
+
+    .telemetry-card .connection-pill {
+      width: auto;
+      padding: 6px 8px;
+      border-color: rgba(180, 154, 255, 0.28);
+      background: rgba(154, 123, 255, 0.09);
+      color: #c8b9ff;
+      font-size: 10px;
+    }
+
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 7px;
+      padding: 10px;
+    }
+
+    .metric {
+      min-width: 0;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(0, 163, 255, 0.035);
+      transition: border-color 140ms ease, transform 140ms ease, background 140ms ease;
+    }
+
+    .metric:hover {
+      transform: translateY(-1px);
+      border-color: rgba(159, 184, 220, 0.32);
+      background: rgba(0, 163, 255, 0.075);
+    }
+
+    .metric-heading {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .metric-icon {
+      display: grid;
+      place-items: center;
+      width: 23px;
+      height: 23px;
+      flex: 0 0 auto;
+      border-radius: 7px;
+    }
+
+    .metric-icon svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .metric-icon-battery { color: #83ef91; background: rgba(69, 205, 111, 0.14); }
+    .metric-icon-power { color: #ffd166; background: rgba(255, 209, 102, 0.14); }
+    .metric-icon-gps { color: #5bb8ff; background: rgba(86, 168, 255, 0.14); }
+    .metric-icon-satellites { color: #b49aff; background: rgba(154, 123, 255, 0.14); }
+    .metric-icon-latitude { color: #ff9a76; background: rgba(255, 123, 114, 0.14); }
+    .metric-icon-longitude { color: #f58bd8; background: rgba(245, 139, 216, 0.14); }
+    .metric-icon-altitude { color: #55dfd1; background: rgba(85, 223, 209, 0.14); }
+    .metric-icon-mission { color: #ff9a32; background: rgba(255, 121, 0, 0.14); }
+
+    .metric-value {
+      margin-top: 4px;
+      overflow: hidden;
+      color: var(--text);
+      font-family: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+      font-size: 14px;
+      font-weight: 750;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .metric-value.good {
+      color: var(--green);
+    }
+
+    .metric-value.warn {
+      color: var(--yellow);
+    }
+
+    .metric-value.bad {
+      color: var(--red);
+    }
+
+    .location-card .card-header {
+      padding: 12px 14px;
+    }
+
+    .location-card .card-header p {
+      margin-top: 3px;
+      font-size: 10px;
+    }
+
+    .location-card .connection-pill {
+      width: auto;
+      padding: 6px 8px;
+      font-size: 10px;
+    }
+
+    .map-body {
+      padding: 10px;
+    }
+
+    .map-frame-wrap {
+      position: relative;
+      min-height: 220px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 11px;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(86, 168, 255, 0.12), transparent 45%),
+        #0b1423;
+    }
+
+    .map-frame {
+      display: block;
+      width: 100%;
+      height: 220px;
+      border: 0;
+    }
+
+    .map-frame[hidden] {
+      display: none;
+    }
+
+    .map-placeholder {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      color: var(--muted);
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    .map-placeholder[hidden] {
+      display: none;
+    }
+
+    .map-placeholder svg {
+      display: block;
+      width: 30px;
+      height: 30px;
+      margin: 0 auto 9px;
+      color: var(--blue);
+    }
+
+    .map-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 9px;
+    }
+
+    .map-address-panel {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      margin-top: 9px;
+      padding: 9px 10px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel-3);
+    }
+
+    .map-address-icon {
+      display: grid;
+      place-items: center;
+      width: 27px;
+      height: 27px;
+      flex: 0 0 auto;
+      border-radius: 8px;
+      background: rgba(0, 163, 255, 0.13);
+      color: var(--blue);
+    }
+
+    .map-address-icon svg {
+      width: 15px;
+      height: 15px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .map-address-copy {
+      min-width: 0;
+    }
+
+    .map-address-label {
+      display: block;
+      color: var(--blue);
+      font-family: "Orbitron", "Inter", sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .map-address {
+      display: block;
+      margin-top: 2px;
+      color: var(--text);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .map-attribution {
+      display: inline-block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 8px;
+      text-decoration: none;
+    }
+
+    .map-attribution:hover {
+      color: var(--blue);
+      text-decoration: underline;
+    }
+
+    .map-coordinates {
+      min-width: 0;
+      overflow: hidden;
+      color: var(--muted);
+      font-family: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+      font-size: 10px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .map-link[aria-disabled="true"] {
+      pointer-events: none;
+      opacity: 0.42;
+    }
+
+    .footer-note {
+      margin: 18px 4px 0;
+      color: #7d8da4;
+      font-size: 11px;
+      line-height: 1.55;
+      text-align: center;
+    }
+
+    .notice {
+      display: none;
+      margin-top: 14px;
+      padding: 11px 13px;
+      border: 1px solid rgba(255, 209, 102, 0.35);
+      border-radius: 11px;
+      background: rgba(255, 209, 102, 0.08);
+      color: #ffe4a4;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .notice.visible {
+      display: block;
+    }
+
+    .designer-tooltip {
+      --tooltip-arrow-x: 50%;
+      position: fixed;
+      z-index: 10000;
+      max-width: min(280px, calc(100vw - 20px));
+      padding: 8px 10px;
+      border: 1px solid rgba(105, 80, 42, 0.46);
+      border-radius: 8px;
+      background:
+        linear-gradient(135deg, #f5ecd8 0%, #e9ddc2 54%, #d8c7a4 100%);
+      box-shadow:
+        0 0 18px rgba(237, 188, 100, 0.14),
+        0 12px 30px rgba(0, 0, 0, 0.52),
+        inset 0 1px 0 rgba(255, 255, 255, 0.58),
+        inset 0 -1px 0 rgba(91, 67, 34, 0.12);
+      color: #17130d;
+      font-family: "Inter", Aptos, "Segoe UI", Arial, sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.4;
+      letter-spacing: 0.01em;
+      text-align: center;
+      overflow-wrap: anywhere;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(4px) scale(0.98);
+      transform-origin: center bottom;
+      transition: opacity 120ms ease, transform 120ms ease;
+      backdrop-filter: blur(14px);
+    }
+
+    .designer-tooltip[hidden] {
+      display: none;
+    }
+
+    .designer-tooltip[data-side="bottom"] {
+      transform: translateY(-4px) scale(0.98);
+      transform-origin: center top;
+    }
+
+    .designer-tooltip.visible,
+    .designer-tooltip[data-side="bottom"].visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .designer-tooltip::after {
+      content: "";
+      position: absolute;
+      left: var(--tooltip-arrow-x);
+      width: 8px;
+      height: 8px;
+      background: #e5d7b9;
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    .designer-tooltip[data-side="top"]::after {
+      bottom: -5px;
+      border-right: 1px solid rgba(105, 80, 42, 0.46);
+      border-bottom: 1px solid rgba(105, 80, 42, 0.46);
+    }
+
+    .designer-tooltip[data-side="bottom"]::after {
+      top: -5px;
+      border-top: 1px solid rgba(105, 80, 42, 0.46);
+      border-left: 1px solid rgba(105, 80, 42, 0.46);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .designer-tooltip {
+        transition: none;
+      }
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .app-shell {
+        width: min(100% - 18px, 1480px);
+        padding-top: 9px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .topbar-controls {
+        width: 100%;
+      }
+
+      .sidebar {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar .card:first-child {
+        grid-column: auto;
+      }
+
+      .location-card {
+        grid-column: auto;
+      }
+
+      .terminal-line {
+        gap: 5px;
+      }
+
+      .terminal {
+        font-size: 11.5px;
+      }
+
+      .command-tab-panel {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 430px) {
+      .topbar-controls {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+      }
+
+      .terminal-toolbar {
+        width: 100%;
+      }
+
+      .terminal-toolbar .button {
+        flex: 1;
+      }
+
+      .form-grid,
+      .settings-checks {
+        grid-template-columns: 1fr;
+      }
+
+      .composer {
+        grid-template-columns: 1fr;
+      }
+
+      .command-tab-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .map-meta {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .map-link {
+        width: 100%;
+      }
+
+      .dialog-footer {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .dialog-footer-actions .button,
+      .dialog-footer > .button {
+        flex: 1;
+      }
+    }
+
+    /* Full-screen mission operations workspace */
+    body {
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    .dashboard-shell.app-shell {
+      --command-sidebar-width: 278px;
+      display: grid;
+      grid-template-columns: var(--command-sidebar-width) minmax(0, 1fr);
+      grid-template-rows: 64px auto minmax(0, 1fr);
+      width: 100%;
+      height: 100dvh;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      transition: grid-template-columns 180ms ease;
+    }
+
+    .dashboard-shell.sidebar-collapsed {
+      --command-sidebar-width: 76px;
+    }
+
+    .command-sidebar {
+      position: relative;
+      z-index: 30;
+      display: flex;
+      grid-column: 1;
+      grid-row: 1 / -1;
+      min-width: 0;
+      min-height: 0;
+      flex-direction: column;
+      border-right: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 12% 1%, rgba(255, 109, 0, 0.11), transparent 15rem),
+        radial-gradient(circle at 95% 18%, rgba(0, 163, 255, 0.08), transparent 18rem),
+        var(--panel);
+      box-shadow: 8px 0 30px rgba(0, 0, 0, 0.34), 2px 0 20px rgba(0, 163, 255, 0.06);
+      overflow: hidden;
+      transition: width 180ms ease, transform 180ms ease;
+    }
+
+    .sidebar-toggle {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      flex: 0 0 auto;
+    }
+
+    .sidebar-brand-lockup {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      height: 64px;
+      min-height: 64px;
+      flex: 0 0 64px;
+      padding: 8px 11px 8px 12px;
+      border-bottom: 1px solid rgba(255, 109, 0, 0.16);
+      background: linear-gradient(90deg, rgba(11, 13, 17, 0.72), rgba(0, 163, 255, 0.045) 58%, rgba(255, 109, 0, 0.055));
+      box-shadow: 0 2px 20px rgba(255, 109, 0, 0.08), 0 4px 28px rgba(0, 0, 0, 0.24);
+    }
+
+    .sidebar-brand-identity {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 10px;
+    }
+
+    .sidebar-brand-lockup .brand-mark {
+      width: 31px;
+      height: 31px;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 9px rgba(255, 109, 0, 0.22));
+    }
+
+    .sidebar-brand-copy {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .sidebar-brand-copy .brand-title {
+      font-size: 18px;
+      letter-spacing: 0.025em;
+      line-height: 1.1;
+      white-space: nowrap;
+    }
+
+    .sidebar-brand-copy .brand-subtitle {
+      margin-top: 3px;
+      font-size: 7.5px;
+      white-space: nowrap;
+    }
+
+    .sidebar-command-mount {
+      display: flex;
+      min-height: 0;
+      flex: 1;
+    }
+
+    .command-sidebar .quick-command-panel {
+      display: block;
+      width: 100%;
+      min-height: 0;
+      padding: 7px 10px 12px;
+      border: 0;
+      background: transparent;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scrollbar-color: var(--line) transparent;
+    }
+
+    .command-sidebar .quick-command-tabs {
+      display: none;
+    }
+
+    .command-sidebar .command-tab-panel,
+    .command-sidebar .command-tab-panel[hidden] {
+      display: flex !important;
+      flex-direction: column;
+      gap: 6px;
+      padding: 0;
+    }
+
+    .command-sidebar .command-tab-panel + .command-tab-panel {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--line);
+    }
+
+    .sidebar-group-heading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 30px;
+      padding: 2px 5px;
+      color: var(--blue);
+      font-family: "Orbitron", "Inter", sans-serif;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .sidebar-group-heading svg {
+      width: 15px;
+      height: 15px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .command-sidebar .command-button {
+      width: 100%;
+      min-height: 48px;
+      padding: 7px 8px;
+      border-radius: 9px;
+      background: var(--surface-gradient);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025), 0 2px 9px rgba(0, 0, 0, 0.12);
+      transition: border-color 150ms ease, background 150ms ease, box-shadow 150ms ease, transform 150ms ease;
+    }
+
+    .command-sidebar .command-button:hover:not(:disabled),
+    .terminal-toolbar .button-secondary:hover:not(:disabled) {
+      border-color: rgba(255, 109, 0, 0.38);
+      background: linear-gradient(135deg, rgba(0, 163, 255, 0.09), rgba(255, 109, 0, 0.12));
+      box-shadow: 0 0 16px rgba(0, 163, 255, 0.12), 0 0 18px rgba(255, 109, 0, 0.11);
+    }
+
+    .command-sidebar .command-icon {
+      width: 29px;
+      height: 29px;
+    }
+
+    .command-sidebar .command-copy {
+      overflow: hidden;
+      font-size: 11px;
+      line-height: 1.2;
+      white-space: nowrap;
+    }
+
+    .command-sidebar .command-description {
+      overflow: hidden;
+      font-size: 8.5px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .command-sidebar .command-button kbd {
+      width: 25px;
+      height: 25px;
+      flex: 0 0 auto;
+      font-size: 12px;
+    }
+
+    .sidebar-footer {
+      padding: 11px 10px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 9px;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .sidebar-footer strong {
+      display: block;
+      color: var(--text);
+      font-family: "Orbitron", "Inter", sans-serif;
+      font-size: 8px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .sidebar-footer-symbol {
+      display: none;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .sidebar-collapsed .sidebar-brand-lockup {
+      justify-content: center;
+      gap: 0;
+      padding-inline: 8px;
+    }
+
+    .sidebar-collapsed .sidebar-brand-identity,
+    .sidebar-collapsed .sidebar-brand-copy,
+    .sidebar-collapsed .sidebar-group-heading span,
+    .sidebar-collapsed .command-copy,
+    .sidebar-collapsed .command-button kbd,
+    .sidebar-collapsed .sidebar-footer-copy {
+      display: none;
+    }
+
+    .sidebar-collapsed .sidebar-footer-symbol {
+      display: inline;
+    }
+
+    .sidebar-collapsed .sidebar-toggle {
+      width: 32px;
+      height: 32px;
+    }
+
+    .sidebar-collapsed .command-sidebar .quick-command-panel {
+      padding-inline: 9px;
+    }
+
+    .sidebar-collapsed .command-sidebar .command-button {
+      justify-content: center;
+      min-height: 44px;
+      padding: 6px;
+    }
+
+    .sidebar-collapsed .command-sidebar .command-label {
+      gap: 0;
+    }
+
+    .sidebar-collapsed .sidebar-group-heading {
+      justify-content: center;
+      padding-inline: 0;
+    }
+
+    .dashboard-shell > .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      grid-column: 2;
+      grid-row: 1;
+      min-width: 0;
+      min-height: 64px;
+      padding: 9px 14px;
+      border: 0;
+      border-bottom: 1px solid rgba(255, 109, 0, 0.15);
+      border-radius: 0;
+      background:
+        linear-gradient(105deg, rgba(0, 163, 255, 0.22) 0%, rgba(0, 163, 255, 0.075) 22%, rgba(22, 27, 34, 0.98) 49%, rgba(255, 109, 0, 0.08) 76%, rgba(255, 109, 0, 0.22) 100%),
+        var(--panel-3);
+      box-shadow: 0 2px 20px rgba(255, 109, 0, 0.1), 0 1px 8px rgba(255, 109, 0, 0.06), 0 4px 30px rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(16px);
+    }
+
+    .dashboard-shell .topbar-controls {
+      display: flex;
+      width: auto;
+    }
+
+    .workspace-title {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      gap: 10px;
+    }
+
+    .workspace-brand-mark {
+      display: none;
+      width: 29px;
+      height: 29px;
+      flex: 0 0 auto;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 9px rgba(255, 109, 0, 0.24));
+    }
+
+    .sidebar-collapsed .workspace-brand-mark {
+      display: block;
+    }
+
+    .workspace-heading-copy {
+      min-width: 0;
+    }
+
+    .workspace-eyebrow {
+      display: block;
+      color: var(--blue);
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .workspace-title h2 {
+      margin: 2px 0 0;
+      overflow: hidden;
+      color: var(--text);
+      font-family: "Orbitron", "Inter", sans-serif;
+      font-size: 15px;
+      letter-spacing: 0.02em;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .mobile-sidebar-button,
+    .dock-toggle-button,
+    .dock-close-button {
+      display: none;
+    }
+
+    .dashboard-shell > .notice {
+      grid-column: 2;
+      grid-row: 2;
+      margin: 8px 12px 0;
+    }
+
+    .dashboard-shell > .layout {
+      display: grid;
+      grid-column: 2;
+      grid-row: 3;
+      grid-template-columns: minmax(0, 1fr) minmax(330px, 25vw);
+      gap: 12px;
+      min-width: 0;
+      min-height: 0;
+      margin: 0;
+      padding: 12px;
+      overflow: hidden;
+    }
+
+    .center-workspace {
+      display: grid;
+      grid-template-rows: minmax(0, 1fr) auto;
+      gap: 12px;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .console-card {
+      display: flex;
+      min-height: 0;
+      flex-direction: column;
+    }
+
+    .console-card,
+    .telemetry-card,
+    .right-dock .card {
+      box-shadow: var(--shadow);
+      transition: border-color 180ms ease, box-shadow 180ms ease;
+    }
+
+    .console-card:hover,
+    .telemetry-card:hover,
+    .right-dock .card:hover {
+      border-color: rgba(255, 109, 0, 0.34);
+      box-shadow: 0 0 18px rgba(255, 109, 0, 0.12), 0 0 32px rgba(0, 163, 255, 0.1), 0 6px 24px rgba(0, 0, 0, 0.28);
+    }
+
+    .console-card > .quick-command-panel {
+      display: none;
+    }
+
+    .console-card .card-header {
+      flex: 0 0 auto;
+      padding: 10px 13px;
+    }
+
+    .console-card .card-header h2 {
+      font-size: 13px;
+    }
+
+    .console-card .card-header p {
+      font-size: 10px;
+    }
+
+    .console-card .terminal {
+      height: auto;
+      min-height: 0;
+      flex: 1 1 auto;
+      padding: 10px 13px 14px;
+    }
+
+    .console-card .composer {
+      flex: 0 0 auto;
+      padding: 10px;
+    }
+
+    .telemetry-dock {
+      min-width: 0;
+    }
+
+    .telemetry-dock .telemetry-card {
+      box-shadow: var(--shadow);
+    }
+
+    .telemetry-dock .telemetry-card .card-header {
+      padding: 8px 11px;
+    }
+
+    .telemetry-dock .telemetry-grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 6px;
+      padding: 7px;
+    }
+
+    .telemetry-dock .metric {
+      min-height: 50px;
+      padding: 6px 8px;
+      background: var(--surface-gradient);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025), 0 2px 8px rgba(0, 0, 0, 0.11);
+    }
+
+    .telemetry-dock .metric:hover {
+      border-color: rgba(0, 163, 255, 0.32);
+      box-shadow: 0 0 14px rgba(0, 163, 255, 0.11), 0 4px 12px rgba(0, 0, 0, 0.16);
+    }
+
+    .telemetry-dock .metric-icon {
+      width: 20px;
+      height: 20px;
+    }
+
+    .telemetry-dock .metric-icon svg {
+      width: 12px;
+      height: 12px;
+    }
+
+    .telemetry-dock .metric-value {
+      margin-top: 2px;
+      font-size: 12px;
+    }
+
+    .right-dock.sidebar {
+      display: flex;
+      min-width: 0;
+      min-height: 0;
+      flex-direction: column;
+      gap: 12px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      scrollbar-color: var(--line) transparent;
+    }
+
+    .dock-toolbar {
+      display: none;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--line);
+      background: var(--panel-3);
+    }
+
+    .dock-toolbar span {
+      color: var(--text);
+      font-family: "Orbitron", "Inter", sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .right-dock .location-card {
+      flex: 0 0 auto;
+    }
+
+    .right-dock .map-frame-wrap,
+    .right-dock .map-frame {
+      min-height: 220px;
+      height: 220px;
+    }
+
+    .right-dock .map-frame-wrap {
+      box-shadow: inset 0 0 24px rgba(0, 163, 255, 0.09), 0 3px 14px rgba(0, 0, 0, 0.22);
+    }
+
+    .right-dock .map-address-panel {
+      background: var(--surface-gradient);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025);
+    }
+
+    .future-widget {
+      min-height: 180px;
+      flex: 1 0 180px;
+    }
+
+    .future-widget-body {
+      display: grid;
+      min-height: 125px;
+      place-items: center;
+      padding: 24px;
+      background:
+        radial-gradient(circle at 50% 45%, rgba(0, 163, 255, 0.12), transparent 45%),
+        linear-gradient(180deg, rgba(0, 163, 255, 0.055), rgba(11, 13, 17, 0.5)),
+        var(--panel-3);
+      color: var(--muted);
+      text-align: center;
+      font-size: 11px;
+      line-height: 1.55;
+    }
+
+    .future-widget-body svg {
+      display: block;
+      width: 34px;
+      height: 34px;
+      margin: 0 auto 10px;
+      color: var(--violet);
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .future-badge {
+      display: inline-block;
+      margin-top: 7px;
+      padding: 3px 7px;
+      border: 1px solid rgba(179, 155, 255, 0.32);
+      border-radius: 999px;
+      background: rgba(179, 155, 255, 0.09);
+      color: var(--violet);
+      font-family: "Orbitron", "Inter", sans-serif;
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .dashboard-shell > .footer-note {
+      display: none;
+    }
+
+    .panel-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 25;
+      border: 0;
+      background: rgba(3, 8, 17, 0.66);
+      backdrop-filter: blur(2px);
+    }
+
+    @media (min-width: 1800px) {
+      .telemetry-dock .telemetry-grid {
+        grid-template-columns: repeat(8, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 1100px) {
+      .dashboard-shell > .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .dock-toggle-button,
+      .dock-close-button {
+        display: grid;
+      }
+
+      .right-dock.sidebar {
+        position: fixed;
+        z-index: 40;
+        top: 64px;
+        right: 0;
+        bottom: 0;
+        width: min(390px, calc(100vw - 76px));
+        padding: 0 10px 10px;
+        border-left: 1px solid var(--line);
+        background: var(--page);
+        box-shadow: -20px 0 50px rgba(0, 0, 0, 0.42);
+        transform: translateX(105%);
+        transition: transform 180ms ease;
+      }
+
+      .dashboard-shell.dock-open .right-dock {
+        transform: translateX(0);
+      }
+
+      .dashboard-shell.dock-open .panel-backdrop {
+        display: block;
+      }
+
+      .dock-toolbar {
+        display: flex;
+        margin: 0 -10px 0;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .dashboard-shell.app-shell,
+      .dashboard-shell.sidebar-collapsed {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .dashboard-shell > .topbar {
+        align-items: center;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        width: 100%;
+        height: 64px;
+        min-height: 64px;
+        gap: 8px;
+        padding: 8px;
+        overflow: hidden;
+      }
+
+      .dashboard-shell .workspace-title {
+        flex: 0 0 auto;
+        gap: 0;
+      }
+
+      .dashboard-shell .workspace-heading-copy,
+      .dashboard-shell .workspace-brand-mark {
+        display: none !important;
+      }
+
+      .dashboard-shell .mobile-sidebar-button {
+        display: grid;
+        width: 38px;
+        height: 38px;
+        min-height: 38px;
+        flex: 0 0 38px;
+        margin: 0;
+      }
+
+      .dashboard-shell .topbar-controls {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        grid-template-columns: none;
+        width: auto;
+        min-width: 0;
+        flex: 1 1 auto;
+        flex-wrap: nowrap;
+        gap: 6px;
+        margin-left: auto;
+      }
+
+      .dashboard-shell .topbar-controls .connection-pill {
+        width: auto;
+        min-width: 0;
+        max-width: 150px;
+        flex: 1 1 auto;
+        padding: 7px 9px;
+        overflow: hidden;
+        font-size: 10px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .dashboard-shell .connection-text-full {
+        display: none;
+      }
+
+      .dashboard-shell .connection-text-compact {
+        display: inline;
+      }
+
+      .dashboard-shell .topbar-controls .button,
+      .dashboard-shell .topbar-controls .icon-button {
+        width: 38px;
+        height: 38px;
+        min-height: 38px;
+        flex: 0 0 38px;
+        padding: 0;
+      }
+
+      .dashboard-shell .topbar-controls .button-label {
+        display: none;
+      }
+
+      .console-card .card-header {
+        align-items: center;
+        height: 64px;
+        flex-direction: row;
+        gap: 8px;
+      }
+
+      .console-card .terminal-toolbar {
+        width: auto;
+        flex: 0 0 auto;
+        flex-wrap: nowrap;
+        gap: 4px;
+      }
+
+      .console-card .terminal-toolbar .button {
+        width: 34px;
+        min-width: 34px;
+        min-height: 34px;
+        flex: 0 0 34px;
+        gap: 0;
+        padding: 0;
+        font-size: 0;
+      }
+
+      .console-card .terminal-toolbar .button-icon {
+        width: 16px;
+        height: 16px;
+        flex: 0 0 16px;
+        margin: 0;
+      }
+
+      .console-card .terminal {
+        font-size: 10px !important;
+        line-height: 1.45;
+      }
+
+      .console-card .terminal-line {
+        grid-template-columns: 7ch 3ch minmax(0, 1fr);
+        gap: 5px;
+      }
+
+      .console-card .terminal.no-timestamps .terminal-line {
+        grid-template-columns: 3ch minmax(0, 1fr);
+      }
+
+      .console-card .terminal-time-full {
+        display: none;
+      }
+
+      .console-card .terminal-time-compact {
+        display: inline;
+      }
+
+      .dashboard-shell .card-header {
+        height: 52px;
+        min-height: 52px;
+        gap: 8px;
+        padding: 6px 9px;
+      }
+
+      .dashboard-shell .card-heading {
+        gap: 7px;
+      }
+
+      .dashboard-shell .card-header h2,
+      .dashboard-shell .card-header h3 {
+        font-size: 12px;
+        letter-spacing: 0.01em;
+      }
+
+      .dashboard-shell .card-header p,
+      .dashboard-shell .console-card .card-header p,
+      .dashboard-shell .location-card .card-header p,
+      .dashboard-shell .telemetry-card .card-header p {
+        margin-top: 2px;
+        font-size: 9px;
+      }
+
+      .dashboard-shell .card-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 9px;
+      }
+
+      .dashboard-shell .card-icon svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      .dashboard-shell .card-header > .connection-pill,
+      .dashboard-shell .card-header > .future-badge {
+        padding: 5px 7px;
+        font-size: 9px;
+      }
+
+      .command-sidebar {
+        position: fixed;
+        inset: 0 auto 0 0;
+        width: min(278px, calc(100vw - 46px));
+        transform: translateX(-105%);
+      }
+
+      .dashboard-shell.sidebar-open .command-sidebar {
+        transform: translateX(0);
+      }
+
+      .dashboard-shell.sidebar-open .panel-backdrop {
+        display: block;
+      }
+
+      .dashboard-shell > .topbar,
+      .dashboard-shell > .notice,
+      .dashboard-shell > .layout {
+        grid-column: 1;
+      }
+
+      .sidebar-collapsed .sidebar-brand-lockup {
+        justify-content: space-between;
+        padding-inline: 12px 11px;
+      }
+
+      .sidebar-collapsed .sidebar-brand-identity,
+      .sidebar-collapsed .sidebar-brand-copy,
+      .sidebar-collapsed .sidebar-group-heading span,
+      .sidebar-collapsed .command-copy,
+      .sidebar-collapsed .command-button kbd,
+      .sidebar-collapsed .sidebar-footer-copy {
+        display: block;
+      }
+
+      .sidebar-collapsed .sidebar-footer-symbol {
+        display: none;
+      }
+
+      .sidebar-collapsed .sidebar-brand-identity {
+        display: flex;
+        gap: 10px;
+      }
+
+      .sidebar-collapsed .sidebar-brand-lockup .brand-mark {
+        width: 31px;
+        height: 31px;
+      }
+
+      .sidebar-collapsed .sidebar-toggle {
+        width: 32px;
+        height: 32px;
+      }
+
+      .sidebar-collapsed .command-sidebar .quick-command-panel {
+        padding-inline: 10px;
+      }
+
+      .sidebar-collapsed .command-sidebar .command-button {
+        justify-content: space-between;
+        min-height: 48px;
+        padding: 7px 8px;
+      }
+
+      .sidebar-collapsed .command-sidebar .command-label {
+        gap: 9px;
+      }
+
+      .sidebar-collapsed .sidebar-group-heading {
+        justify-content: flex-start;
+        padding-inline: 5px;
+      }
+
+      .dashboard-shell > .layout {
+        padding: 8px;
+      }
+
+      .center-workspace {
+        gap: 8px;
+      }
+
+      .telemetry-dock .telemetry-grid {
+        grid-template-columns: repeat(8, minmax(116px, 1fr));
+        overflow-x: auto;
+      }
+
+    }
+
+    @media (max-width: 560px) {
+      .dashboard-shell > .topbar {
+        padding-inline: 7px;
+      }
+
+      .topbar-controls {
+        min-width: 0;
+        gap: 6px;
+      }
+
+      .topbar-controls .connection-pill {
+        max-width: 126px;
+        min-width: 0;
+        padding: 7px 9px;
+        overflow: hidden;
+        font-size: 10px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .topbar-controls .button,
+      .topbar-controls .icon-button {
+        width: 38px;
+        min-height: 38px;
+        padding: 0;
+      }
+
+      .topbar-controls .button-label {
+        display: none;
+      }
+
+      .console-card .composer {
+        grid-template-columns: minmax(0, 1fr) auto;
+      }
+
+      .console-card .composer .button {
+        padding-inline: 10px;
+      }
+
+      .console-card .composer .button-label {
+        display: none;
+      }
+
+      .console-card .terminal {
+        font-size: 9.5px !important;
+      }
+
+      .right-dock.sidebar {
+        width: min(390px, 94vw);
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Reusable inline SVG symbols. Add new icons here and reference them with <use>. -->
+  <svg class="icon-sprite" aria-hidden="true">
+    <symbol id="icon-radio" viewBox="0 0 24 24">
+      <rect x="4" y="7" width="16" height="12" rx="2"></rect>
+      <path d="M8 7 15 2M8 11h8M8 15h5"></path>
+      <circle cx="17" cy="15" r="1"></circle>
+    </symbol>
+    <symbol id="icon-power" viewBox="0 0 24 24">
+      <path d="M12 3v9M7.1 6.4a8 8 0 1 0 9.8 0"></path>
+    </symbol>
+    <symbol id="icon-settings" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="3"></circle>
+      <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.86 2.86-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1.02 1.56V21H10v-.04A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.86-2.86.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.02H3V10h.04A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.86-2.86.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.56V3h4v.04A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.86 2.86-.06.06A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.56 1H21v4h-.04A1.7 1.7 0 0 0 19.4 15Z"></path>
+    </symbol>
+    <symbol id="icon-location" viewBox="0 0 24 24">
+      <path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"></path>
+      <circle cx="12" cy="10" r="2.5"></circle>
+    </symbol>
+    <symbol id="icon-telemetry" viewBox="0 0 24 24">
+      <path d="M3 13h4l2-6 4 11 2-7 2 2h4"></path>
+    </symbol>
+    <symbol id="icon-battery" viewBox="0 0 24 24">
+      <rect x="3" y="7" width="17" height="10" rx="2"></rect>
+      <path d="M20 10h2v4h-2M7 10v4M10 10v4M13 10v4"></path>
+    </symbol>
+    <symbol id="icon-bolt" viewBox="0 0 24 24">
+      <path d="m13 2-8 12h7l-1 8 8-12h-7l1-8Z"></path>
+    </symbol>
+    <symbol id="icon-compass" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"></circle>
+      <path d="m15 9-2 4-4 2 2-4 4-2Z"></path>
+    </symbol>
+    <symbol id="icon-satellite" viewBox="0 0 24 24">
+      <path d="m9 15 6-6M7 13l4 4-3 3-4-4 3-3ZM13 7l4 4 3-3-4-4-3 3ZM14 14l5 5M5 5l5 5M18 13a7 7 0 0 1-5 5M11 6a7 7 0 0 0-5 5"></path>
+    </symbol>
+    <symbol id="icon-latitude" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"></circle>
+      <path d="M3 12h18M5 7h14M5 17h14"></path>
+    </symbol>
+    <symbol id="icon-longitude" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9"></circle>
+      <path d="M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18M3 12h18"></path>
+    </symbol>
+    <symbol id="icon-altitude" viewBox="0 0 24 24">
+      <path d="m3 19 6-9 4 5 2-3 6 7H3ZM18 3v7M15 6l3-3 3 3"></path>
+    </symbol>
+    <symbol id="icon-mission" viewBox="0 0 24 24">
+      <path d="M20 7h-5V2M4 17h5v5M19 12a7 7 0 0 0-12-5l-3 3M5 12a7 7 0 0 0 12 5l3-3"></path>
+    </symbol>
+    <symbol id="icon-terminal" viewBox="0 0 24 24">
+      <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+      <path d="m7 9 3 3-3 3M13 16h4"></path>
+    </symbol>
+    <symbol id="icon-sample" viewBox="0 0 24 24">
+      <path d="M12 3v3M12 18v3M3 12h3M18 12h3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"></path>
+      <circle cx="12" cy="12" r="3"></circle>
+    </symbol>
+    <symbol id="icon-clear" viewBox="0 0 24 24">
+      <path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5"></path>
+    </symbol>
+    <symbol id="icon-download" viewBox="0 0 24 24">
+      <path d="M12 3v12M7 10l5 5 5-5M4 20h16"></path>
+    </symbol>
+    <symbol id="icon-send" viewBox="0 0 24 24">
+      <path d="m3 11 18-8-8 18-2-8-8-2ZM11 13l5-5"></path>
+    </symbol>
+    <symbol id="icon-camera" viewBox="0 0 24 24">
+      <path d="M4 7h4l2-3h4l2 3h4v12H4V7Z"></path>
+      <circle cx="12" cy="13" r="4"></circle>
+    </symbol>
+    <symbol id="icon-storage" viewBox="0 0 24 24">
+      <path d="M5 3h11l3 3v15H5V3ZM8 3v6h8V3M8 16h8"></path>
+    </symbol>
+    <symbol id="icon-calibrate" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="8"></circle>
+      <circle cx="12" cy="12" r="3"></circle>
+      <path d="M12 2v4M12 18v4M2 12h4M18 12h4"></path>
+    </symbol>
+    <symbol id="icon-test" viewBox="0 0 24 24">
+      <path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3M8 15h8"></path>
+    </symbol>
+    <symbol id="icon-menu" viewBox="0 0 24 24">
+      <path d="M4 7h16M4 12h16M4 17h16"></path>
+    </symbol>
+    <symbol id="icon-panels" viewBox="0 0 24 24">
+      <rect x="3" y="4" width="18" height="16" rx="2"></rect>
+      <path d="M15 4v16M6 8h6M6 12h6M6 16h6"></path>
+    </symbol>
+    <symbol id="icon-sky" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="2"></circle>
+      <path d="M3 12h3M18 12h3M12 3v3M12 18v3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M18.4 5.6l-2.1 2.1M7.7 16.3l-2.1 2.1"></path>
+      <path d="M4 19c3-3 5-4 8-4s5 1 8 4"></path>
+    </symbol>
+    <symbol id="icon-close" viewBox="0 0 24 24">
+      <path d="M6 6l12 12M18 6 6 18"></path>
+    </symbol>
+  </svg>
+  <!-- Primary full-screen application shell: command rail, top bar, console, and mission dock. -->
+  <div id="dashboardShell" class="app-shell dashboard-shell">
+    <aside id="commandSidebar" class="command-sidebar" aria-label="Mission command menu">
+      <div class="sidebar-brand-lockup">
+        <div class="sidebar-brand-identity">
+          <img class="brand-mark" src="https://www.vyomsat.com/assets/images/logo/vyomsat-logo-icon.png" alt="">
+          <div class="sidebar-brand-copy">
+            <h1 class="brand-title"><span class="vyom">VYOM</span><span class="sat">SAT</span> <span class="alpha">Alpha</span></h1>
+          </div>
+        </div>
+        <button id="sidebarToggleBtn" class="icon-button sidebar-toggle" type="button" aria-label="Collapse command menu" aria-expanded="true" title="Collapse menu">
+          <svg aria-hidden="true"><use href="#icon-menu"></use></svg>
+        </button>
+      </div>
+      <div id="sidebarCommandMount" class="sidebar-command-mount"></div>
+      <div class="sidebar-footer">
+        <span class="sidebar-footer-copy">&copy; 2026 VyomSat. All rights reserved.</span>
+        <span class="sidebar-footer-symbol" aria-hidden="true">&copy;</span>
+      </div>
+    </aside>
+
+    <header class="topbar">
+      <div class="workspace-title">
+        <button id="mobileSidebarBtn" class="icon-button mobile-sidebar-button" type="button" aria-label="Open command menu" aria-expanded="false" title="Command menu">
+          <svg aria-hidden="true"><use href="#icon-menu"></use></svg>
+        </button>
+        <img class="workspace-brand-mark" src="https://www.vyomsat.com/assets/images/logo/vyomsat-logo-icon.png" alt="" aria-hidden="true">
+        <div class="workspace-heading-copy">
+          <span class="workspace-eyebrow">Mission Console</span>
+          <h2>Ground Station</h2>
+        </div>
+      </div>
+      <div class="topbar-controls" aria-label="Connection controls">
+        <div id="connectionPill" class="connection-pill" role="status" aria-live="polite" title="Disconnected">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span id="connectionText" class="connection-text-full">Disconnected</span>
+          <span id="connectionTextCompact" class="connection-text-compact" aria-hidden="true">Disconnected</span>
+        </div>
+        <button id="connectBtn" class="button button-connect" type="button"><svg class="button-icon" aria-hidden="true"><use href="#icon-radio"></use></svg><span class="button-label">Connect</span></button>
+        <button id="disconnectBtn" class="button button-disconnect" type="button" hidden disabled><svg class="button-icon" aria-hidden="true"><use href="#icon-power"></use></svg><span class="button-label">Disconnect</span></button>
+        <button id="settingsBtn" class="icon-button" type="button" aria-label="Open settings" title="Settings">
+          <svg aria-hidden="true"><use href="#icon-settings"></use></svg>
+        </button>
+        <button id="dockToggleBtn" class="icon-button dock-toggle-button" type="button" aria-label="Open mission panels" aria-expanded="false" title="Mission panels">
+          <svg aria-hidden="true"><use href="#icon-panels"></use></svg>
+        </button>
+      </div>
+    </header>
+
+    <div id="supportNotice" class="notice" role="alert"></div>
+
+    <main class="layout">
+      <div class="center-workspace">
+      <section class="card console-card" aria-labelledby="terminalTitle">
+        <div class="card-header">
+          <div class="card-heading">
+            <span class="card-icon card-icon-terminal" aria-hidden="true"><svg><use href="#icon-terminal"></use></svg></span>
+            <div>
+              <h2 id="terminalTitle" title="Telemetry &amp; Command">Telemetry &amp; Command</h2>
+              <p title="Live telemetry and command responses">Live telemetry and command responses</p>
+            </div>
+          </div>
+          <div class="terminal-toolbar">
+            <button id="sampleBtn" class="button button-secondary button-small toolbar-sample" type="button" title="Load sample data" disabled><svg class="button-icon" aria-hidden="true"><use href="#icon-sample"></use></svg>Sample data</button>
+            <button id="clearBtn" class="button button-secondary button-small toolbar-clear" type="button" title="Clear terminal" disabled><svg class="button-icon" aria-hidden="true"><use href="#icon-clear"></use></svg>Clear</button>
+            <button id="downloadBtn" class="button button-secondary button-small toolbar-download" type="button" title="Download terminal log" disabled><svg class="button-icon" aria-hidden="true"><use href="#icon-download"></use></svg>Download log</button>
+          </div>
+        </div>
+
+        <div id="terminal" class="terminal" role="log" aria-live="polite" aria-label="Telemetry terminal output">
+          <div id="terminalPlaceholder" class="terminal-placeholder">
+            <div>
+              <strong>No telemetry received yet</strong>
+              Select Connect, choose the ground station device, and then power on VyomSAT Alpha.
+            </div>
+          </div>
+        </div>
+
+        <form id="commandForm" class="composer" autocomplete="off">
+          <input
+            id="commandInput"
+            class="command-input"
+            type="text"
+            maxlength="1"
+            inputmode="text"
+            aria-label="Single-character command"
+            placeholder="Enter one command character, for example a"
+            disabled>
+          <button id="sendBtn" class="button button-primary" type="submit" title="Send command" disabled><svg class="button-icon" aria-hidden="true"><use href="#icon-send"></use></svg><span class="button-label">Send</span></button>
+        </form>
+
+        <div class="quick-command-panel" aria-labelledby="quickCommandsLabel">
+          <div class="quick-command-tabs" role="tablist" aria-label="Quick command categories">
+            <button id="opsTab" class="quick-tab active" type="button" role="tab" aria-selected="true" aria-controls="opsCommands" data-command-tab="opsCommands"><svg class="button-icon" aria-hidden="true"><use href="#icon-mission"></use></svg>Ops Commands</button>
+            <button id="testsTab" class="quick-tab" type="button" role="tab" aria-selected="false" aria-controls="testCommands" data-command-tab="testCommands"><svg class="button-icon" aria-hidden="true"><use href="#icon-test"></use></svg>Test Commands</button>
+          </div>
+          <span id="quickCommandsLabel" hidden>Firmware quick commands</span>
+
+          <div id="opsCommands" class="command-tab-panel active" role="tabpanel" aria-labelledby="opsTab">
+            <div class="sidebar-group-heading"><svg aria-hidden="true"><use href="#icon-mission"></use></svg><span>Ops Commands</span></div>
+            <button class="command-button" type="button" data-command="a" disabled>
+              <span class="command-label"><span class="command-icon command-icon-blue" aria-hidden="true"><svg><use href="#icon-compass"></use></svg></span><span class="command-copy">IMU Attitude<span class="command-description">Attitude and IMU report</span></span></span><kbd>a</kbd>
+            </button>
+            <button class="command-button" type="button" data-command="b" disabled>
+              <span class="command-label"><span class="command-icon command-icon-green" aria-hidden="true"><svg><use href="#icon-battery"></use></svg></span><span class="command-copy">Battery Read<span class="command-description">Battery voltage report</span></span></span><kbd>b</kbd>
+            </button>
+            <button class="command-button" type="button" data-command="c" disabled>
+              <span class="command-label"><span class="command-icon command-icon-violet" aria-hidden="true"><svg><use href="#icon-camera"></use></svg></span><span class="command-copy">Camera Capture<span class="command-description">Capture and store image</span></span></span><kbd>c</kbd>
+            </button>
+            <button class="command-button" type="button" data-command="g" disabled>
+              <span class="command-label"><span class="command-icon command-icon-teal" aria-hidden="true"><svg><use href="#icon-location"></use></svg></span><span class="command-copy">GPS Report<span class="command-description">Position and diagnostics</span></span></span><kbd>g</kbd>
+            </button>
+            <button class="command-button" type="button" data-command="h" disabled>
+              <span class="command-label"><span class="command-icon command-icon-green" aria-hidden="true"><svg><use href="#icon-telemetry"></use></svg></span><span class="command-copy">System Health<span class="command-description">Subsystem health summary</span></span></span><kbd>h</kbd>
+            </button>
+            <button class="command-button" type="button" data-command="i" disabled>
+              <span class="command-label"><span class="command-icon command-icon-gold" aria-hidden="true"><svg><use href="#icon-calibrate"></use></svg></span><span class="command-copy">IMU Calibration<span class="command-description">Keep the spacecraft still</span></span></span><kbd>i</kbd>
+            </button>
+            <button class="command-button command-caution" type="button" data-command="r" data-confirm="Reset the VyomSAT controller now?" disabled>
+              <span class="command-label"><span class="command-icon command-icon-rose" aria-hidden="true"><svg><use href="#icon-power"></use></svg></span><span class="command-copy">System Reset<span class="command-description">Reset the controller</span></span></span><kbd>r</kbd>
+            </button>
+            <button class="command-button" type="button" data-command="s" disabled>
+              <span class="command-label"><span class="command-icon command-icon-orange" aria-hidden="true"><svg><use href="#icon-storage"></use></svg></span><span class="command-copy">SD Data Log<span class="command-description">Start sensor logging</span></span></span><kbd>s</kbd>
+            </button>
+          </div>
+
+          <div id="testCommands" class="command-tab-panel" role="tabpanel" aria-labelledby="testsTab" hidden>
+            <div class="sidebar-group-heading"><svg aria-hidden="true"><use href="#icon-test"></use></svg><span>Test Commands</span></div>
+            <button class="command-button" type="button" data-command="t" disabled>
+              <span class="command-label"><span class="command-icon command-icon-blue" aria-hidden="true"><svg><use href="#icon-compass"></use></svg></span><span class="command-copy">ADCS Sensing<span class="command-description">Run ADCS sensing test</span></span></span><kbd>t</kbd>
+            </button>
+            <button class="command-button" type="button" data-command="u" disabled>
+              <span class="command-label"><span class="command-icon command-icon-violet" aria-hidden="true"><svg><use href="#icon-camera"></use></svg></span><span class="command-copy">Camera Test<span class="command-description">Run capture test</span></span></span><kbd>u</kbd>
+            </button>
+            <button class="command-button" type="button" data-command="v" disabled>
+              <span class="command-label"><span class="command-icon command-icon-teal" aria-hidden="true"><svg><use href="#icon-location"></use></svg></span><span class="command-copy">GPS Sensing<span class="command-description">Run GPS sensing test</span></span></span><kbd>v</kbd>
+            </button>
+            <button class="command-button" type="button" data-command="w" disabled>
+              <span class="command-label"><span class="command-icon command-icon-orange" aria-hidden="true"><svg><use href="#icon-storage"></use></svg></span><span class="command-copy">SD Card Test<span class="command-description">Write, read, and checksum</span></span></span><kbd>w</kbd>
+            </button>
+            <button class="command-button command-caution" type="button" data-command="x" data-confirm="Run the integrated mission test sequence?" disabled>
+              <span class="command-label"><span class="command-icon command-icon-rose" aria-hidden="true"><svg><use href="#icon-mission"></use></svg></span><span class="command-copy">Integrated Mission<span class="command-description">Run full mission test</span></span></span><kbd>x</kbd>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <div id="telemetryDock" class="telemetry-dock" aria-label="Latest telemetry"></div>
+      </div>
+
+      <aside id="rightDock" class="sidebar right-dock" aria-label="Mission visual panels">
+        <div class="dock-toolbar">
+          <span>Mission Panels</span>
+          <button id="dockCloseBtn" class="icon-button dock-close-button" type="button" aria-label="Close mission panels" title="Close panels">
+            <svg aria-hidden="true"><use href="#icon-close"></use></svg>
+          </button>
+        </div>
+        <section class="card location-card" aria-labelledby="locationTitle">
+          <div class="card-header">
+            <div class="card-heading">
+              <span class="card-icon card-icon-location" aria-hidden="true"><svg><use href="#icon-location"></use></svg></span>
+              <div>
+                <h2 id="locationTitle" title="Satellite Location">Satellite Location</h2>
+                <p title="Satellite view • refreshes after 1 m movement">Satellite view • refreshes after 1 m movement</p>
+              </div>
+            </div>
+            <div id="mapStatus" class="connection-pill" title="Waiting for GPS fix">Waiting for GPS</div>
+          </div>
+          <div class="map-body">
+            <div class="map-frame-wrap">
+              <iframe
+                id="mapFrame"
+                class="map-frame"
+                title="Latest VyomSAT location on Google Maps"
+                loading="lazy"
+                referrerpolicy="strict-origin-when-cross-origin"
+                allowfullscreen
+                hidden></iframe>
+              <div id="mapPlaceholder" class="map-placeholder">
+                <div>
+                  <svg aria-hidden="true"><use href="#icon-location"></use></svg>
+                  Waiting for valid LAT and LON fields in a TEL packet.
+                </div>
+              </div>
+            </div>
+            <div class="map-meta">
+              <span id="mapCoordinates" class="map-coordinates" title="No GPS coordinates received">LAT -- &nbsp; LON --</span>
+              <a id="openMapLink" class="button button-secondary button-small map-link" href="#" target="_blank" rel="noopener noreferrer" aria-disabled="true"><svg class="button-icon" aria-hidden="true"><use href="#icon-location"></use></svg>Open in Google Maps</a>
+            </div>
+            <div class="map-address-panel">
+              <span class="map-address-icon" aria-hidden="true"><svg><use href="#icon-location"></use></svg></span>
+              <div class="map-address-copy">
+                <span class="map-address-label">Approximate address</span>
+                <span id="mapAddress" class="map-address" aria-live="polite" title="Waiting for GPS coordinates.">Waiting for GPS coordinates.</span>
+                <a class="map-attribution" href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">Address data © OpenStreetMap contributors</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card telemetry-card" aria-labelledby="telemetryTitle">
+          <div class="card-header">
+            <div class="card-heading">
+              <span class="card-icon card-icon-telemetry" aria-hidden="true"><svg><use href="#icon-telemetry"></use></svg></span>
+              <div>
+                <h2 id="telemetryTitle" title="Latest Parsed Telemetry">Latest Parsed Telemetry</h2>
+                <p title="Decoded values from the latest TEL packet">Decoded values from the latest TEL packet</p>
+              </div>
+            </div>
+            <div id="packetSummary" class="connection-pill" title="Total telemetry packets received">0 packets</div>
+          </div>
+          <div class="telemetry-grid">
+            <div class="metric">
+              <div class="metric-heading"><span class="metric-icon metric-icon-battery" aria-hidden="true"><svg><use href="#icon-battery"></use></svg></span><span class="metric-label">Battery</span></div>
+              <div id="metricBattery" class="metric-value">--</div>
+            </div>
+            <div class="metric">
+              <div class="metric-heading"><span class="metric-icon metric-icon-power" aria-hidden="true"><svg><use href="#icon-bolt"></use></svg></span><span class="metric-label">Power</span></div>
+              <div id="metricPower" class="metric-value">--</div>
+            </div>
+            <div class="metric">
+              <div class="metric-heading"><span class="metric-icon metric-icon-gps" aria-hidden="true"><svg><use href="#icon-compass"></use></svg></span><span class="metric-label">GPS</span></div>
+              <div id="metricGps" class="metric-value">--</div>
+            </div>
+            <div class="metric">
+              <div class="metric-heading"><span class="metric-icon metric-icon-satellites" aria-hidden="true"><svg><use href="#icon-satellite"></use></svg></span><span class="metric-label">Satellites</span></div>
+              <div id="metricSatellites" class="metric-value">--</div>
+            </div>
+            <div class="metric">
+              <div class="metric-heading"><span class="metric-icon metric-icon-latitude" aria-hidden="true"><svg><use href="#icon-latitude"></use></svg></span><span class="metric-label">Latitude</span></div>
+              <div id="metricLatitude" class="metric-value">--</div>
+            </div>
+            <div class="metric">
+              <div class="metric-heading"><span class="metric-icon metric-icon-longitude" aria-hidden="true"><svg><use href="#icon-longitude"></use></svg></span><span class="metric-label">Longitude</span></div>
+              <div id="metricLongitude" class="metric-value">--</div>
+            </div>
+            <div class="metric">
+              <div class="metric-heading"><span class="metric-icon metric-icon-altitude" aria-hidden="true"><svg><use href="#icon-altitude"></use></svg></span><span class="metric-label">Altitude</span></div>
+              <div id="metricAltitude" class="metric-value">--</div>
+            </div>
+            <div class="metric">
+              <div class="metric-heading"><span class="metric-icon metric-icon-mission" aria-hidden="true"><svg><use href="#icon-mission"></use></svg></span><span class="metric-label">Mission cycle</span></div>
+              <div id="metricCycle" class="metric-value">--</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card future-widget" aria-labelledby="skyMapTitle">
+          <div class="card-header">
+            <div class="card-heading">
+              <span class="card-icon" aria-hidden="true"><svg><use href="#icon-sky"></use></svg></span>
+              <div>
+                <h2 id="skyMapTitle" title="Sky Map">Sky Map</h2>
+                <p title="Reserved mission visualization panel">Reserved mission visualization panel</p>
+              </div>
+            </div>
+            <span class="future-badge">Future</span>
+          </div>
+          <div class="future-widget-body">
+            <div>
+              <svg aria-hidden="true"><use href="#icon-sky"></use></svg>
+              Celestial position and visibility data can be added here without changing the dashboard structure.
+            </div>
+          </div>
+        </section>
+      </aside>
+    </main>
+
+    <button id="panelBackdrop" class="panel-backdrop" type="button" aria-label="Close open panel"></button>
+
+    <p class="footer-note">
+      Commands use one lower-case character plus the selected send newline (CR+LF by default), matching the VyomSAT Alpha firmware parser. Use this page in current Chrome over HTTPS or localhost. If opening the file directly does not expose Web Serial, run a local web server and open it from localhost.
+      <br>&copy; 2026 VyomSat Aerospace Limited. Build mission-ready teams. Prove spacecraft readiness. Assure every mission.
+    </p>
+  </div>
+
+  <!-- Connection, terminal, send, and browser-integration preferences. -->
+  <dialog id="settingsDialog" class="settings-dialog" aria-labelledby="settingsDialogTitle">
+    <form id="settingsForm">
+      <div class="dialog-header">
+        <div>
+          <h2 id="settingsDialogTitle">Connection Settings</h2>
+          <p>VyomSAT defaults are preloaded. Serial changes take effect after reconnecting.</p>
+        </div>
+        <button id="settingsCloseBtn" class="icon-button dialog-close" type="button" aria-label="Close settings">&times;</button>
+      </div>
+
+      <div class="settings-tabs" role="tablist" aria-label="Connection settings categories">
+        <button id="serialSettingsTab" class="settings-tab active" type="button" role="tab" aria-selected="true" aria-controls="serialSettings" data-settings-tab="serialSettings">Serial</button>
+        <button id="terminalSettingsTab" class="settings-tab" type="button" role="tab" aria-selected="false" aria-controls="terminalSettings" data-settings-tab="terminalSettings">Terminal</button>
+        <button id="sendSettingsTab" class="settings-tab" type="button" role="tab" aria-selected="false" aria-controls="sendSettings" data-settings-tab="sendSettings">Receive / Send</button>
+        <button id="miscSettingsTab" class="settings-tab" type="button" role="tab" aria-selected="false" aria-controls="miscSettings" data-settings-tab="miscSettings">Misc.</button>
+      </div>
+
+      <div class="settings-panel-wrap">
+        <section id="serialSettings" class="settings-panel active" role="tabpanel" aria-labelledby="serialSettingsTab">
+          <div class="settings-device-panel">
+            <div class="settings-device-heading"><svg aria-hidden="true"><use href="#icon-radio"></use></svg><span>Connected device and link path</span></div>
+            <div class="device-box">
+              <p id="deviceTitle" class="device-title">No USB serial device selected</p>
+              <p id="deviceDetail" class="device-detail">Connect the ground XBee S2C through the XBee Explorer USB adapter.</p>
+              <p id="controlLineStatus" class="device-detail" hidden></p>
+            </div>
+            <div class="link-path" aria-label="Ground station communication path">
+              <span class="link-node">Chrome</span>
+              <span class="link-arrow">&gt;</span>
+              <span class="link-node">USB</span>
+              <span class="link-arrow">&gt;</span>
+              <span class="link-node">XBee Explorer</span>
+              <span class="link-arrow">&gt;</span>
+              <span class="link-node">RF</span>
+              <span class="link-arrow">&gt;</span>
+              <span class="link-node">VyomSAT</span>
+            </div>
+          </div>
+          <div class="form-grid">
+            <label class="form-field">
+              <span>Baud rate</span>
+              <input id="settingBaudRate" type="number" min="300" max="3000000" step="1" value="9600" required>
+            </label>
+            <label class="form-field">
+              <span>Data bits</span>
+              <select id="settingDataBits"><option value="8">8</option><option value="7">7</option></select>
+            </label>
+            <label class="form-field">
+              <span>Parity</span>
+              <select id="settingParity"><option value="none">None</option><option value="even">Even</option><option value="odd">Odd</option></select>
+            </label>
+            <label class="form-field">
+              <span>Stop bits</span>
+              <select id="settingStopBits"><option value="1">1</option><option value="2">2</option></select>
+            </label>
+            <label class="form-field">
+              <span>Flow control</span>
+              <select id="settingFlowControl"><option value="none">None</option><option value="hardware">Hardware (RTS/CTS)</option></select>
+            </label>
+            <label class="form-field">
+              <span>Web Serial buffer</span>
+              <input id="settingSerialBuffer" type="number" min="255" max="16777216" step="1" value="65536" required>
+            </label>
+            <label class="form-field">
+              <span>BREAK duration (ms)</span>
+              <input id="settingBreakDuration" type="number" min="1" max="10000" step="1" value="100" required>
+            </label>
+          </div>
+          <div class="settings-checks">
+            <label class="settings-check"><input id="settingShowControlLines" type="checkbox"><span>Show control lines</span></label>
+          </div>
+          <div class="serial-tools">
+            <button id="sendBreakBtn" class="button button-secondary button-small" type="button" disabled>Send BREAK</button>
+            <button id="refreshSignalsBtn" class="button button-secondary button-small" type="button" disabled>Refresh control lines</button>
+            <span id="dialogControlStatus" class="control-status">Connect to read CTS / DCD / DSR / RI.</span>
+          </div>
+          <p class="settings-help">VyomSAT guide defaults: 9600 baud, 8 data bits, no parity, 1 stop bit, and no flow control.</p>
+        </section>
+
+        <section id="terminalSettings" class="settings-panel" role="tabpanel" aria-labelledby="terminalSettingsTab" hidden>
+          <div class="form-grid">
+            <label class="form-field">
+              <span>Font size (px)</span>
+              <input id="settingFontSize" type="number" min="9" max="28" step="1" value="14" required>
+            </label>
+            <label class="form-field">
+              <span>Font style</span>
+              <select id="settingFontStyle"><option value="normal">Normal</option><option value="bold">Bold</option></select>
+            </label>
+            <label class="form-field">
+              <span>Charset</span>
+              <select id="settingCharset"><option value="utf-8">UTF-8</option><option value="windows-1252">Windows-1252</option><option value="iso-8859-1">ISO-8859-1</option></select>
+            </label>
+            <label class="form-field">
+              <span>Display mode</span>
+              <select id="settingDisplayMode"><option value="text">Text</option><option value="hex">Hex</option></select>
+            </label>
+            <label class="form-field">
+              <span>Timestamp format</span>
+              <select id="settingTimestampFormat"><option value="milliseconds">HH:mm:ss.SSS</option><option value="seconds">HH:mm:ss</option></select>
+            </label>
+            <label class="form-field">
+              <span>Terminal buffer</span>
+              <select id="settingMaxTerminalLines"><option value="0">Unlimited</option><option value="1000">1,000 lines</option><option value="2500">2,500 lines</option><option value="5000">5,000 lines</option><option value="10000">10,000 lines</option></select>
+            </label>
+          </div>
+          <div class="settings-checks">
+            <label class="settings-check"><input id="settingAutoScroll" type="checkbox" checked><span>Auto-scroll to end</span></label>
+            <label class="settings-check"><input id="settingConnectionMessages" type="checkbox" checked><span>Show connection messages</span></label>
+            <label class="settings-check"><input id="settingShowTimestamps" type="checkbox" checked><span>Show timestamps</span></label>
+          </div>
+        </section>
+
+        <section id="sendSettings" class="settings-panel" role="tabpanel" aria-labelledby="sendSettingsTab" hidden>
+          <div class="form-grid">
+            <label class="form-field">
+              <span>Receive newline</span>
+              <select id="settingReceiveNewline"><option value="auto">Auto</option><option value="crlf">CR+LF</option><option value="lf">LF</option><option value="cr">CR</option></select>
+            </label>
+            <label class="form-field">
+              <span>Send newline</span>
+              <select id="settingTransmitSuffix"><option value="crlf">CR+LF (VyomSAT default)</option><option value="same">Same as Receive</option><option value="lf">LF</option><option value="cr">CR</option><option value="none">None</option></select>
+            </label>
+            <label class="form-field">
+              <span>Edit mode</span>
+              <select id="settingEditMode"><option value="text">Text</option></select>
+            </label>
+            <label class="form-field">
+              <span>Line delay (ms)</span>
+              <input id="settingLineDelay" type="number" min="0" max="60000" step="1" value="0" required>
+            </label>
+            <label class="form-field">
+              <span>Character delay (ms)</span>
+              <input id="settingCharacterDelay" type="number" min="0" max="10000" step="1" value="0" required>
+            </label>
+          </div>
+          <div class="settings-checks">
+            <label class="settings-check"><input id="settingLocalEcho" type="checkbox" checked><span>Local echo</span></label>
+            <label class="settings-check"><input id="settingClearInput" type="checkbox"><span>Clear input on send</span></label>
+          </div>
+          <p class="settings-help">The current firmware dispatches a buffered command when CR or LF arrives, so CR+LF remains the safe VyomSAT default.</p>
+        </section>
+
+        <section id="miscSettings" class="settings-panel" role="tabpanel" aria-labelledby="miscSettingsTab" hidden>
+          <div class="settings-checks">
+            <label class="settings-check"><input id="settingKeepScreenAwake" type="checkbox" checked><span>Keep screen on while connected</span></label>
+            <label class="settings-check"><input id="settingConnectionNotification" type="checkbox"><span>Show connection notification</span></label>
+          </div>
+          <p class="settings-help">Quick commands are fixed to the current VyomSAT firmware command table. Terminal logs can be saved with Download log.</p>
+        </section>
+      </div>
+
+      <div class="dialog-footer">
+        <button id="resetSettingsBtn" class="button button-secondary" type="button">Restore VyomSAT defaults</button>
+        <div class="dialog-footer-actions">
+          <button id="cancelSettingsBtn" class="button button-secondary" type="button">Cancel</button>
+          <button class="button button-primary" type="submit">Save settings</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="designerTooltip" class="designer-tooltip" role="tooltip" hidden></div>
+
+  <!--
+    Maintenance architecture
+    ------------------------
+    This remains a dependency-free, single-file application so it can be served
+    from any static host. The runtime is organized into responsibility-focused
+    sections inside one private closure: configuration, DOM registry, UI state,
+    terminal/protocol handling, telemetry/map services, browser integrations,
+    serial transport, event binding, and application bootstrap.
+
+    Conventions:
+    - UPPER_SNAKE_CASE names are immutable constants.
+    - camelCase names hold mutable state, functions, and DOM references.
+    - initialize* functions perform one-time setup; handle* functions are event
+      callbacks; render*/update* functions synchronize state with the interface.
+    - Serial writes return an explicit success result so UI actions occur only
+      after the browser accepts the complete command payload.
+  -->
+  <script>
+    (() => {
+      "use strict";
+
+      // ---------------------------------------------------------------------
+      // Configuration and protocol constants
+      // ---------------------------------------------------------------------
+
+      const APP_CONFIG = Object.freeze({
+        mediaQueries: Object.freeze({
+          mobile: "(max-width: 760px)",
+          dockOverlay: "(max-width: 1100px)"
+        }),
+        storageKeys: Object.freeze({
+          settings: "vyomsat-alpha-ground-station-settings-v2",
+          sidebarCollapsed: "vyomsat-alpha-dashboard-sidebar-collapsed-v1"
+        }),
+        terminal: Object.freeze({
+          maxLogEntries: 20000,
+          sampleLineDelayMs: 110
+        }),
+        map: Object.freeze({
+          earthRadiusMeters: 6371008.8,
+          movementThresholdMeters: 1,
+          minimumRefreshIntervalMs: 6000,
+          reverseGeocoderEndpoint: "https://nominatim.openstreetmap.org/reverse",
+          reverseGeocodeMinimumIntervalMs: 30000,
+          reverseGeocodeCacheLimit: 50
+        })
+      });
+
+      const NEWLINE_SEQUENCES = Object.freeze({
+        crlf: "\r\n",
+        lf: "\n",
+        cr: "\r",
+        none: ""
+      });
+
+      const NUMERIC_SETTING_KEYS = new Set([
+        "baudRate", "dataBits", "stopBits", "serialBuffer", "breakDuration",
+        "fontSize", "maxTerminalLines", "lineDelay", "characterDelay"
+      ]);
+
+      const SAMPLE_TERMINAL_LINES = Object.freeze([
+        "TEL,TS=202444,BAT=3.90,PWR=NORMAL,GPS=FIX,LAT=25.025882,LON=55.135760,ALT=54.3,NSAT=3,N=36",
+        "ACK: IMU Attitude 'a' command received",
+        "IMU,ACC,X=-0.531,Y=0.042,Z=9.910,TOTAL=9.924",
+        "IMU,ATT,YAW=349.2,PITCH=0.42,ROLL=3.11,HDG=349.2",
+        "DONE: IMU Attitude 'a' command completed",
+        "TEL,TS=211312,BAT=3.90,PWR=NORMAL,GPS=FIX,LAT=25.025870,LON=55.135780,ALT=53.0,NSAT=3,N=38"
+      ]);
+
+      const DEFAULT_SETTINGS = Object.freeze({
+        baudRate: 9600,
+        dataBits: 8,
+        stopBits: 1,
+        parity: "none",
+        flowControl: "none",
+        serialBuffer: 65536,
+        breakDuration: 100,
+        showControlLines: false,
+        fontSize: 14,
+        fontStyle: "normal",
+        charset: "utf-8",
+        displayMode: "text",
+        timestampFormat: "milliseconds",
+        maxTerminalLines: 0,
+        autoScroll: true,
+        connectionMessages: true,
+        showTimestamps: true,
+        receiveNewline: "auto",
+        transmitSuffix: "crlf",
+        editMode: "text",
+        lineDelay: 0,
+        characterDelay: 0,
+        localEcho: true,
+        clearInput: false,
+        keepScreenAwake: true,
+        connectionNotification: false
+      });
+
+      function getRequiredElement(id) {
+        const element = document.getElementById(id);
+        if (!element) throw new Error(`Required interface element #${id} was not found.`);
+        return element;
+      }
+
+      function getRequiredMatch(selector) {
+        const element = document.querySelector(selector);
+        if (!element) throw new Error(`Required interface element ${selector} was not found.`);
+        return element;
+      }
+
+      function getElements(selector) {
+        return Array.from(document.querySelectorAll(selector));
+      }
+
+      function describeError(error) {
+        return error instanceof Error ? error.message : String(error);
+      }
+
+      function isMobileLayout() {
+        return window.matchMedia(APP_CONFIG.mediaQueries.mobile).matches;
+      }
+
+      function usesDockOverlay() {
+        return window.matchMedia(APP_CONFIG.mediaQueries.dockOverlay).matches;
+      }
+
+      // ---------------------------------------------------------------------
+      // DOM composition and registry
+      // ---------------------------------------------------------------------
+
+      /**
+       * Moves reusable panels into their dashboard regions before references
+       * are cached. Keeping a single source node avoids duplicated command and
+       * telemetry markup between desktop and responsive layouts.
+       */
+      function mountDashboardPanels() {
+        const commandPanel = getRequiredMatch(".quick-command-panel");
+        const commandMount = getRequiredElement("sidebarCommandMount");
+        commandMount.appendChild(commandPanel);
+
+        for (const panel of getElements(".command-tab-panel")) {
+          panel.hidden = false;
+          panel.classList.add("active");
+        }
+
+        for (const button of getElements("[data-command]")) {
+          const commandName = button.querySelector(".command-copy")?.firstChild?.textContent?.trim() || "Command";
+          const command = button.dataset.command || "";
+          button.title = `${commandName} (${command})`;
+          button.setAttribute("aria-label", `${commandName}, command ${command}`);
+        }
+
+        const telemetryCard = getRequiredMatch(".telemetry-card");
+        const telemetryDock = getRequiredElement("telemetryDock");
+        telemetryDock.appendChild(telemetryCard);
+      }
+
+      mountDashboardPanels();
+      let settings = loadSettings();
+
+      const elements = {
+        dashboardShell: getRequiredElement("dashboardShell"),
+        commandSidebar: getRequiredElement("commandSidebar"),
+        sidebarToggleBtn: getRequiredElement("sidebarToggleBtn"),
+        mobileSidebarBtn: getRequiredElement("mobileSidebarBtn"),
+        rightDock: getRequiredElement("rightDock"),
+        dockToggleBtn: getRequiredElement("dockToggleBtn"),
+        dockCloseBtn: getRequiredElement("dockCloseBtn"),
+        panelBackdrop: getRequiredElement("panelBackdrop"),
+        designerTooltip: getRequiredElement("designerTooltip"),
+        connectionPill: getRequiredElement("connectionPill"),
+        connectionText: getRequiredElement("connectionText"),
+        connectionTextCompact: getRequiredElement("connectionTextCompact"),
+        supportNotice: getRequiredElement("supportNotice"),
+        connectBtn: getRequiredElement("connectBtn"),
+        disconnectBtn: getRequiredElement("disconnectBtn"),
+        settingsBtn: getRequiredElement("settingsBtn"),
+        deviceTitle: getRequiredElement("deviceTitle"),
+        deviceDetail: getRequiredElement("deviceDetail"),
+        controlLineStatus: getRequiredElement("controlLineStatus"),
+        terminal: getRequiredElement("terminal"),
+        terminalPlaceholder: getRequiredElement("terminalPlaceholder"),
+        commandForm: getRequiredElement("commandForm"),
+        commandInput: getRequiredElement("commandInput"),
+        sendBtn: getRequiredElement("sendBtn"),
+        clearBtn: getRequiredElement("clearBtn"),
+        downloadBtn: getRequiredElement("downloadBtn"),
+        sampleBtn: getRequiredElement("sampleBtn"),
+        quickCommands: getElements("[data-command]"),
+        quickTabs: getElements("[data-command-tab]"),
+        commandPanels: getElements(".command-tab-panel"),
+        settingsDialog: getRequiredElement("settingsDialog"),
+        settingsForm: getRequiredElement("settingsForm"),
+        settingsCloseBtn: getRequiredElement("settingsCloseBtn"),
+        cancelSettingsBtn: getRequiredElement("cancelSettingsBtn"),
+        resetSettingsBtn: getRequiredElement("resetSettingsBtn"),
+        settingsTabs: getElements("[data-settings-tab]"),
+        settingsPanels: getElements(".settings-panel"),
+        sendBreakBtn: getRequiredElement("sendBreakBtn"),
+        refreshSignalsBtn: getRequiredElement("refreshSignalsBtn"),
+        dialogControlStatus: getRequiredElement("dialogControlStatus"),
+        packetSummary: getRequiredElement("packetSummary"),
+        metricBattery: getRequiredElement("metricBattery"),
+        metricPower: getRequiredElement("metricPower"),
+        metricGps: getRequiredElement("metricGps"),
+        metricSatellites: getRequiredElement("metricSatellites"),
+        metricLatitude: getRequiredElement("metricLatitude"),
+        metricLongitude: getRequiredElement("metricLongitude"),
+        metricAltitude: getRequiredElement("metricAltitude"),
+        metricCycle: getRequiredElement("metricCycle"),
+        mapFrame: getRequiredElement("mapFrame"),
+        mapPlaceholder: getRequiredElement("mapPlaceholder"),
+        mapStatus: getRequiredElement("mapStatus"),
+        mapCoordinates: getRequiredElement("mapCoordinates"),
+        mapAddress: getRequiredElement("mapAddress"),
+        openMapLink: getRequiredElement("openMapLink"),
+        settingFields: {
+          baudRate: getRequiredElement("settingBaudRate"),
+          dataBits: getRequiredElement("settingDataBits"),
+          parity: getRequiredElement("settingParity"),
+          stopBits: getRequiredElement("settingStopBits"),
+          flowControl: getRequiredElement("settingFlowControl"),
+          serialBuffer: getRequiredElement("settingSerialBuffer"),
+          breakDuration: getRequiredElement("settingBreakDuration"),
+          showControlLines: getRequiredElement("settingShowControlLines"),
+          fontSize: getRequiredElement("settingFontSize"),
+          fontStyle: getRequiredElement("settingFontStyle"),
+          charset: getRequiredElement("settingCharset"),
+          displayMode: getRequiredElement("settingDisplayMode"),
+          timestampFormat: getRequiredElement("settingTimestampFormat"),
+          maxTerminalLines: getRequiredElement("settingMaxTerminalLines"),
+          autoScroll: getRequiredElement("settingAutoScroll"),
+          connectionMessages: getRequiredElement("settingConnectionMessages"),
+          showTimestamps: getRequiredElement("settingShowTimestamps"),
+          receiveNewline: getRequiredElement("settingReceiveNewline"),
+          transmitSuffix: getRequiredElement("settingTransmitSuffix"),
+          editMode: getRequiredElement("settingEditMode"),
+          lineDelay: getRequiredElement("settingLineDelay"),
+          characterDelay: getRequiredElement("settingCharacterDelay"),
+          localEcho: getRequiredElement("settingLocalEcho"),
+          clearInput: getRequiredElement("settingClearInput"),
+          keepScreenAwake: getRequiredElement("settingKeepScreenAwake"),
+          connectionNotification: getRequiredElement("settingConnectionNotification")
+        }
+      };
+
+      const connectionOnlyControls = [
+        elements.commandInput,
+        elements.sendBtn,
+        elements.sendBreakBtn,
+        elements.refreshSignalsBtn,
+        elements.sampleBtn,
+        elements.clearBtn,
+        elements.downloadBtn,
+        ...elements.quickCommands
+      ];
+
+      const telemetryMetricElements = [
+        elements.metricBattery,
+        elements.metricPower,
+        elements.metricGps,
+        elements.metricSatellites,
+        elements.metricLatitude,
+        elements.metricLongitude,
+        elements.metricAltitude,
+        elements.metricCycle
+      ];
+
+      // Mutable state is grouped by responsibility. This keeps transport,
+      // presentation, telemetry, and browser integrations independently usable.
+      const serialState = Object.seal({
+        port: null,
+        reader: null,
+        readTask: null,
+        keepReading: false,
+        isDisconnecting: false
+      });
+
+      const terminalState = Object.seal({
+        pendingText: "",
+        lineCount: 0,
+        logEntries: []
+      });
+
+      const telemetryState = Object.seal({
+        packetCount: 0
+      });
+
+      const browserIntegrationState = Object.seal({
+        wakeLock: null,
+        connectionNotification: null
+      });
+
+      // ---------------------------------------------------------------------
+      // Designer tooltip service
+      // ---------------------------------------------------------------------
+
+      function initializeDesignerTooltips() {
+        const tooltip = elements.designerTooltip;
+        if (!tooltip) return;
+
+        let activeTarget = null;
+        let hideTimer = null;
+
+        function absorbNativeTitle(element) {
+          if (!(element instanceof Element) || !element.hasAttribute("title")) return;
+          const title = element.getAttribute("title")?.trim();
+          if (title) element.dataset.tooltip = title;
+          element.removeAttribute("title");
+          if (activeTarget === element && title) {
+            tooltip.textContent = title;
+            positionTooltip();
+          }
+        }
+
+        function migrateTitles(root) {
+          if (root instanceof Element) absorbNativeTitle(root);
+          root.querySelectorAll?.("[title]").forEach(absorbNativeTitle);
+        }
+
+        function tooltipTargetFrom(node) {
+          return node instanceof Element ? node.closest("[data-tooltip]") : null;
+        }
+
+        function positionTooltip() {
+          if (!activeTarget || tooltip.hidden) return;
+
+          const targetRect = activeTarget.getBoundingClientRect();
+          const tooltipRect = tooltip.getBoundingClientRect();
+          const viewportPadding = 8;
+          const targetGap = 10;
+          let side = activeTarget.dataset.tooltipPlacement === "bottom" ? "bottom" : "top";
+
+          if (side === "top" && targetRect.top - tooltipRect.height - targetGap < viewportPadding) side = "bottom";
+          if (side === "bottom" && targetRect.bottom + tooltipRect.height + targetGap > window.innerHeight - viewportPadding) side = "top";
+
+          const idealLeft = targetRect.left + targetRect.width / 2 - tooltipRect.width / 2;
+          const left = Math.min(
+            window.innerWidth - tooltipRect.width - viewportPadding,
+            Math.max(viewportPadding, idealLeft)
+          );
+          const top = side === "top"
+            ? targetRect.top - tooltipRect.height - targetGap
+            : targetRect.bottom + targetGap;
+          const targetCenter = targetRect.left + targetRect.width / 2;
+          const arrowX = Math.min(tooltipRect.width - 12, Math.max(12, targetCenter - left));
+
+          tooltip.dataset.side = side;
+          tooltip.style.left = `${Math.round(left)}px`;
+          tooltip.style.top = `${Math.round(Math.max(viewportPadding, top))}px`;
+          tooltip.style.setProperty("--tooltip-arrow-x", `${Math.round(arrowX)}px`);
+        }
+
+        function showTooltip(target) {
+          const text = target?.dataset.tooltip?.trim();
+          if (!text) return;
+
+          if (hideTimer) window.clearTimeout(hideTimer);
+          const tooltipHost = target.closest("dialog") || document.body;
+          if (tooltip.parentElement !== tooltipHost) tooltipHost.appendChild(tooltip);
+          activeTarget = target;
+          tooltip.textContent = text;
+          tooltip.hidden = false;
+          tooltip.classList.remove("visible");
+          positionTooltip();
+          window.requestAnimationFrame(() => {
+            if (activeTarget !== target) return;
+            positionTooltip();
+            tooltip.classList.add("visible");
+          });
+        }
+
+        function hideTooltip(immediate = false) {
+          activeTarget = null;
+          tooltip.classList.remove("visible");
+          if (hideTimer) window.clearTimeout(hideTimer);
+          if (immediate) {
+            tooltip.hidden = true;
+            return;
+          }
+          hideTimer = window.setTimeout(() => { tooltip.hidden = true; }, 130);
+        }
+
+        migrateTitles(document);
+
+        document.addEventListener("pointerover", (event) => {
+          const target = tooltipTargetFrom(event.target);
+          if (target && target !== activeTarget) showTooltip(target);
+        });
+
+        document.addEventListener("pointerout", (event) => {
+          if (!activeTarget) return;
+          const nextTarget = tooltipTargetFrom(event.relatedTarget);
+          if (nextTarget === activeTarget) return;
+          hideTooltip();
+        });
+
+        document.addEventListener("focusin", (event) => {
+          const target = tooltipTargetFrom(event.target);
+          if (target) showTooltip(target);
+        });
+
+        document.addEventListener("focusout", (event) => {
+          if (tooltipTargetFrom(event.target)) hideTooltip();
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") hideTooltip(true);
+        });
+
+        window.addEventListener("scroll", () => hideTooltip(true), true);
+        window.addEventListener("resize", () => hideTooltip(true));
+
+        const titleObserver = new MutationObserver(records => {
+          for (const record of records) absorbNativeTitle(record.target);
+        });
+        titleObserver.observe(document.body, { subtree: true, attributes: true, attributeFilter: ["title"] });
+      }
+      const mapState = Object.seal({
+        lastLocationKey: "",
+        lastLatitude: null,
+        lastLongitude: null,
+        lastMapUpdateAt: 0,
+        pendingMapLocation: null,
+        mapUpdateTimer: null,
+        lastReverseGeocodeAt: 0,
+        lastReverseGeocodeKey: "",
+        currentReverseGeocodeKey: "",
+        pendingReverseLocation: null,
+        reverseGeocodeTimer: null,
+        reverseGeocodeRequestToken: 0,
+        reverseGeocodeCache: new Map()
+      });
+
+      // ---------------------------------------------------------------------
+      // Persistence and dashboard layout
+      // ---------------------------------------------------------------------
+
+      function normalizeSettings(candidate) {
+        const normalized = { ...DEFAULT_SETTINGS };
+        if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) return normalized;
+
+        for (const [key, defaultValue] of Object.entries(DEFAULT_SETTINGS)) {
+          if (typeof candidate[key] === typeof defaultValue) normalized[key] = candidate[key];
+        }
+        return normalized;
+      }
+
+      function loadSettings() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(APP_CONFIG.storageKeys.settings) || "null");
+          return normalizeSettings(saved);
+        } catch (_) {
+          return { ...DEFAULT_SETTINGS };
+        }
+      }
+
+      function saveSettings() {
+        try {
+          localStorage.setItem(APP_CONFIG.storageKeys.settings, JSON.stringify(settings));
+        } catch (_) {
+          // Some file:// and privacy modes do not expose persistent storage.
+        }
+      }
+
+      function savedSidebarCollapsed() {
+        try {
+          return localStorage.getItem(APP_CONFIG.storageKeys.sidebarCollapsed) === "1";
+        } catch (_) {
+          return false;
+        }
+      }
+
+      function setSidebarCollapsed(collapsed, persist = true) {
+        elements.dashboardShell.classList.toggle("sidebar-collapsed", collapsed);
+        elements.sidebarToggleBtn.setAttribute("aria-expanded", String(!collapsed));
+        elements.sidebarToggleBtn.setAttribute("aria-label", collapsed ? "Expand command menu" : "Collapse command menu");
+        elements.sidebarToggleBtn.title = collapsed ? "Expand menu" : "Collapse menu";
+        if (!persist) return;
+        try {
+          localStorage.setItem(APP_CONFIG.storageKeys.sidebarCollapsed, collapsed ? "1" : "0");
+        } catch (_) {
+          // Layout preference remains active for this page session.
+        }
+      }
+
+      function setMobileSidebarOpen(open) {
+        elements.dashboardShell.classList.toggle("sidebar-open", open);
+        elements.mobileSidebarBtn.setAttribute("aria-expanded", String(open));
+        if (open) {
+          elements.dashboardShell.classList.remove("dock-open");
+          elements.dockToggleBtn.setAttribute("aria-expanded", "false");
+        }
+      }
+
+      function setDockOpen(open) {
+        elements.dashboardShell.classList.toggle("dock-open", open);
+        elements.dockToggleBtn.setAttribute("aria-expanded", String(open));
+        if (open) {
+          elements.dashboardShell.classList.remove("sidebar-open");
+          elements.mobileSidebarBtn.setAttribute("aria-expanded", "false");
+        }
+      }
+
+      function closeOverlayPanels() {
+        setMobileSidebarOpen(false);
+        setDockOpen(false);
+      }
+
+      function initializeDashboardState() {
+        setSidebarCollapsed(savedSidebarCollapsed(), false);
+        setMobileSidebarOpen(false);
+        setDockOpen(false);
+      }
+
+      function showNotice(message) {
+        elements.supportNotice.textContent = message;
+        elements.supportNotice.classList.toggle("visible", Boolean(message));
+      }
+
+      // ---------------------------------------------------------------------
+      // Terminal rendering and line-oriented serial protocol
+      // ---------------------------------------------------------------------
+
+      function formatTimestamp(date = new Date()) {
+        const hours = String(date.getHours()).padStart(2, "0");
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        const seconds = String(date.getSeconds()).padStart(2, "0");
+        const milliseconds = String(date.getMilliseconds()).padStart(3, "0");
+        const base = `${hours}:${minutes}:${seconds}`;
+        return settings.timestampFormat === "seconds" ? base : `${base}.${milliseconds}`;
+      }
+
+      function formatCompactTimestamp(date = new Date()) {
+        const minutes = String(date.getMinutes()).padStart(2, "0");
+        const seconds = String(date.getSeconds()).padStart(2, "0");
+        const milliseconds = String(date.getMilliseconds()).padStart(3, "0");
+        return settings.timestampFormat === "seconds" ? `${minutes}:${seconds}` : `${seconds}.${milliseconds}`;
+      }
+
+      function updateTimestampElement(element, timestamp) {
+        const fullTimestamp = formatTimestamp(timestamp);
+        const compactTimestamp = formatCompactTimestamp(timestamp);
+
+        const full = document.createElement("span");
+        full.className = "terminal-time-full";
+        full.textContent = fullTimestamp;
+
+        const compact = document.createElement("span");
+        compact.className = "terminal-time-compact";
+        compact.textContent = compactTimestamp;
+
+        element.replaceChildren(full, compact);
+        element.dataset.tooltip = fullTimestamp;
+        element.setAttribute("aria-label", fullTimestamp);
+      }
+
+      function classifyLine(text, direction) {
+        if (direction === "TX") return "line-tx";
+
+        const normalized = text.trim().toUpperCase();
+        if (normalized.startsWith("NAK") || normalized.includes("UNKNOWN COMMAND")) return "line-nak";
+        if (normalized.startsWith("ACK")) return "line-ack";
+        if (normalized.startsWith("SYSTEM:") || normalized.startsWith("INFO")) return "line-system";
+        if (normalized.startsWith("ERROR") || normalized.startsWith("ERR")) return "line-error";
+        return "line-rx";
+      }
+
+      function terminalDisplayText(text, direction) {
+        if (settings.displayMode !== "hex" || direction !== "RX") return text;
+        return Array.from(new TextEncoder().encode(text), byte => byte.toString(16).padStart(2, "0").toUpperCase()).join(" ");
+      }
+
+      function appendTerminal(text, direction = "RX", timestamp = new Date(), record = true) {
+        const safeText = String(text).replaceAll("\u0000", "");
+        if (!safeText.length) return;
+
+        if (elements.terminalPlaceholder?.isConnected) {
+          elements.terminalPlaceholder.remove();
+        }
+
+        const row = document.createElement("div");
+        row.className = `terminal-line ${classifyLine(safeText, direction)}`;
+        row.dataset.timestamp = timestamp.toISOString();
+        row.dataset.rawText = safeText;
+        row.dataset.direction = direction;
+
+        const time = document.createElement("span");
+        time.className = "terminal-time";
+        updateTimestampElement(time, timestamp);
+
+        const label = document.createElement("span");
+        label.className = "terminal-direction";
+        label.textContent = direction;
+
+        const content = document.createElement("span");
+        content.className = "terminal-text";
+        content.textContent = terminalDisplayText(safeText, direction);
+
+        row.append(time, label, content);
+        elements.terminal.appendChild(row);
+        terminalState.lineCount += 1;
+
+        while (settings.maxTerminalLines > 0 && terminalState.lineCount > settings.maxTerminalLines && elements.terminal.firstElementChild) {
+          elements.terminal.firstElementChild.remove();
+          terminalState.lineCount -= 1;
+        }
+
+        if (record) {
+          terminalState.logEntries.push({
+            time: timestamp.toISOString(),
+            direction,
+            text: safeText
+          });
+          if (terminalState.logEntries.length > APP_CONFIG.terminal.maxLogEntries) {
+            terminalState.logEntries.shift();
+          }
+        }
+
+        if (settings.autoScroll) {
+          elements.terminal.scrollTop = elements.terminal.scrollHeight;
+        }
+
+        if (direction === "RX") parseTelemetry(safeText);
+      }
+
+      function consumeIncomingText(chunk) {
+        terminalState.pendingText += chunk;
+
+        if (settings.receiveNewline === "auto") {
+          const lines = terminalState.pendingText.split(/\r\n|\n|\r/);
+          terminalState.pendingText = lines.pop() ?? "";
+          for (const line of lines) appendTerminal(line, "RX");
+          return;
+        }
+
+        const separator = NEWLINE_SEQUENCES[settings.receiveNewline] || NEWLINE_SEQUENCES.crlf;
+        let separatorIndex = terminalState.pendingText.indexOf(separator);
+        while (separatorIndex >= 0) {
+          let line = terminalState.pendingText.slice(0, separatorIndex);
+          terminalState.pendingText = terminalState.pendingText.slice(separatorIndex + separator.length);
+          if (settings.receiveNewline === "lf") line = line.replace(/\r$/, "");
+          if (settings.receiveNewline === "cr") {
+            terminalState.pendingText = terminalState.pendingText.replace(/^\n/, "");
+          }
+          appendTerminal(line, "RX");
+          separatorIndex = terminalState.pendingText.indexOf(separator);
+        }
+      }
+
+      function flushPendingText() {
+        if (!terminalState.pendingText) return;
+        appendTerminal(terminalState.pendingText, "RX");
+        terminalState.pendingText = "";
+      }
+
+      function applyTerminalSettings() {
+        elements.terminal.style.fontSize = `${settings.fontSize}px`;
+        elements.terminal.style.fontWeight = settings.fontStyle === "bold" ? "700" : "400";
+        elements.terminal.classList.toggle("no-timestamps", !settings.showTimestamps);
+
+        for (const row of elements.terminal.querySelectorAll(".terminal-line")) {
+          const timestamp = new Date(row.dataset.timestamp);
+          const time = row.querySelector(".terminal-time");
+          const content = row.querySelector(".terminal-text");
+          if (time && !Number.isNaN(timestamp.valueOf())) updateTimestampElement(time, timestamp);
+          if (content) content.textContent = terminalDisplayText(row.dataset.rawText || "", row.dataset.direction || "RX");
+        }
+
+        if (settings.autoScroll) elements.terminal.scrollTop = elements.terminal.scrollHeight;
+      }
+
+      function delay(milliseconds) {
+        return new Promise(resolve => window.setTimeout(resolve, milliseconds));
+      }
+
+      function resolvedTransmitSuffix() {
+        let suffix = settings.transmitSuffix;
+        if (suffix === "same") suffix = settings.receiveNewline === "auto" ? "crlf" : settings.receiveNewline;
+        return NEWLINE_SEQUENCES[suffix] ?? NEWLINE_SEQUENCES.crlf;
+      }
+
+      function transmitSuffixLabel() {
+        const suffix = resolvedTransmitSuffix();
+        return suffix === "\r\n" ? "CR+LF" : suffix === "\n" ? "LF" : suffix === "\r" ? "CR" : "no suffix";
+      }
+
+      function setTextWithTooltip(element, value) {
+        const text = String(value ?? "--");
+        element.textContent = text;
+        element.title = text;
+      }
+
+      function setMetric(element, value, state = "") {
+        setTextWithTooltip(element, value);
+        element.classList.remove("good", "warn", "bad");
+        if (state) element.classList.add(state);
+      }
+
+      // ---------------------------------------------------------------------
+      // Telemetry parsing, map refresh throttling, and reverse geocoding
+      // ---------------------------------------------------------------------
+
+      /** Returns the great-circle distance between two WGS84 coordinates. */
+      function distanceBetweenCoordinates(latitudeA, longitudeA, latitudeB, longitudeB) {
+        const toRadians = degrees => degrees * Math.PI / 180;
+        const latitudeDelta = toRadians(latitudeB - latitudeA);
+        const longitudeDelta = toRadians(longitudeB - longitudeA);
+        const startLatitude = toRadians(latitudeA);
+        const endLatitude = toRadians(latitudeB);
+        const haversine = Math.sin(latitudeDelta / 2) ** 2
+          + Math.cos(startLatitude) * Math.cos(endLatitude) * Math.sin(longitudeDelta / 2) ** 2;
+        return 2 * APP_CONFIG.map.earthRadiusMeters * Math.asin(Math.min(1, Math.sqrt(haversine)));
+      }
+
+      function formatReverseAddress(result) {
+        const address = result && result.address ? result.address : {};
+        const street = [address.house_number, address.road || address.pedestrian || address.path]
+          .filter(Boolean)
+          .join(" ");
+        const locality = address.neighbourhood || address.suburb || address.quarter || address.city_district;
+        const city = address.city || address.town || address.village || address.municipality;
+        const parts = [street, locality, city, address.state, address.postcode, address.country]
+          .filter(Boolean)
+          .filter((part, index, values) => values.indexOf(part) === index);
+        return parts.join(", ") || result.display_name || "No nearby named address found.";
+      }
+
+      function cacheReverseAddress(locationKey, addressText) {
+        mapState.reverseGeocodeCache.set(locationKey, addressText);
+        if (mapState.reverseGeocodeCache.size > APP_CONFIG.map.reverseGeocodeCacheLimit) {
+          mapState.reverseGeocodeCache.delete(mapState.reverseGeocodeCache.keys().next().value);
+        }
+      }
+
+      async function performReverseGeocode() {
+        mapState.reverseGeocodeTimer = null;
+        if (!mapState.pendingReverseLocation) return;
+
+        const { latitude, longitude, locationKey } = mapState.pendingReverseLocation;
+        mapState.pendingReverseLocation = null;
+        const cachedAddress = mapState.reverseGeocodeCache.get(locationKey);
+        if (cachedAddress) {
+          if (locationKey === mapState.currentReverseGeocodeKey) setTextWithTooltip(elements.mapAddress, cachedAddress);
+          return;
+        }
+
+        mapState.lastReverseGeocodeAt = Date.now();
+        mapState.lastReverseGeocodeKey = locationKey;
+        const requestToken = ++mapState.reverseGeocodeRequestToken;
+        if (locationKey === mapState.currentReverseGeocodeKey) {
+          setTextWithTooltip(elements.mapAddress, "Resolving approximate address…");
+        }
+
+        const url = new URL(APP_CONFIG.map.reverseGeocoderEndpoint);
+        url.search = new URLSearchParams({
+          format: "jsonv2",
+          lat: String(latitude),
+          lon: String(longitude),
+          zoom: "18",
+          addressdetails: "1",
+          layer: "address",
+          "accept-language": "en"
+        }).toString();
+
+        try {
+          const response = await fetch(url, {
+            headers: { Accept: "application/json" },
+            credentials: "omit",
+            referrerPolicy: "strict-origin-when-cross-origin"
+          });
+          if (!response.ok) throw new Error(`Address lookup returned HTTP ${response.status}`);
+          const result = await response.json();
+          const addressText = formatReverseAddress(result);
+          cacheReverseAddress(locationKey, addressText);
+          if (requestToken === mapState.reverseGeocodeRequestToken && locationKey === mapState.currentReverseGeocodeKey) {
+            setTextWithTooltip(elements.mapAddress, addressText);
+          }
+        } catch (error) {
+          const fallback = "Address lookup unavailable. Coordinates remain valid.";
+          cacheReverseAddress(locationKey, fallback);
+          if (requestToken === mapState.reverseGeocodeRequestToken && locationKey === mapState.currentReverseGeocodeKey) {
+            setTextWithTooltip(elements.mapAddress, fallback);
+          }
+          console.warn("Reverse geocoding failed:", error);
+        }
+      }
+
+      function scheduleReverseGeocode(latitude, longitude) {
+        const locationKey = `${Number(latitude).toFixed(4)},${Number(longitude).toFixed(4)}`;
+        mapState.currentReverseGeocodeKey = locationKey;
+
+        const cachedAddress = mapState.reverseGeocodeCache.get(locationKey);
+        if (cachedAddress) {
+          setTextWithTooltip(elements.mapAddress, cachedAddress);
+          return;
+        }
+
+        setTextWithTooltip(elements.mapAddress, "Resolving approximate address…");
+        if (locationKey === mapState.lastReverseGeocodeKey && !mapState.pendingReverseLocation) return;
+        mapState.pendingReverseLocation = { latitude, longitude, locationKey };
+
+        const elapsed = Date.now() - mapState.lastReverseGeocodeAt;
+        if (!mapState.lastReverseGeocodeAt || elapsed >= APP_CONFIG.map.reverseGeocodeMinimumIntervalMs) {
+          if (mapState.reverseGeocodeTimer) window.clearTimeout(mapState.reverseGeocodeTimer);
+          performReverseGeocode();
+        } else if (!mapState.reverseGeocodeTimer) {
+          mapState.reverseGeocodeTimer = window.setTimeout(
+            performReverseGeocode,
+            APP_CONFIG.map.reverseGeocodeMinimumIntervalMs - elapsed
+          );
+        }
+      }
+
+      function renderPendingMapLocation() {
+        mapState.mapUpdateTimer = null;
+        if (!mapState.pendingMapLocation) return;
+
+        const { latitude, longitude, locationKey } = mapState.pendingMapLocation;
+        mapState.pendingMapLocation = null;
+        if (locationKey === mapState.lastLocationKey) return;
+
+        const query = encodeURIComponent(`${latitude},${longitude}`);
+        elements.mapFrame.src = `https://maps.google.com/maps?q=${query}&z=15&t=k&output=embed`;
+        elements.mapFrame.hidden = false;
+        elements.mapPlaceholder.hidden = true;
+        mapState.lastLocationKey = locationKey;
+        mapState.lastLatitude = Number(latitude);
+        mapState.lastLongitude = Number(longitude);
+        mapState.lastMapUpdateAt = Date.now();
+        scheduleReverseGeocode(mapState.lastLatitude, mapState.lastLongitude);
+      }
+
+      /**
+       * Updates coordinates immediately, but refreshes the embedded map only
+       * after meaningful movement and the configured minimum interval.
+       */
+      function updateSatelliteMap(latitudeValue, longitudeValue) {
+        const latitude = Number(latitudeValue);
+        const longitude = Number(longitudeValue);
+        if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return;
+        if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return;
+
+        const latitudeText = latitude.toFixed(6);
+        const longitudeText = longitude.toFixed(6);
+        const locationKey = `${latitudeText},${longitudeText}`;
+        const mapsQuery = encodeURIComponent(`${latitudeText},${longitudeText}`);
+
+        setTextWithTooltip(elements.mapCoordinates, `LAT ${latitudeText}  LON ${longitudeText}`);
+        elements.openMapLink.href = `https://www.google.com/maps/search/?api=1&query=${mapsQuery}`;
+        elements.openMapLink.setAttribute("aria-disabled", "false");
+        setTextWithTooltip(elements.mapStatus, "GPS position");
+        elements.mapStatus.classList.add("connected");
+
+        const movementMeters = mapState.lastLatitude === null || mapState.lastLongitude === null
+          ? Number.POSITIVE_INFINITY
+          : distanceBetweenCoordinates(mapState.lastLatitude, mapState.lastLongitude, latitude, longitude);
+        if (movementMeters < APP_CONFIG.map.movementThresholdMeters) {
+          mapState.pendingMapLocation = null;
+          if (mapState.mapUpdateTimer) window.clearTimeout(mapState.mapUpdateTimer);
+          mapState.mapUpdateTimer = null;
+          return;
+        }
+
+        mapState.pendingMapLocation = { latitude, longitude, locationKey };
+
+        const elapsed = Date.now() - mapState.lastMapUpdateAt;
+        if (!mapState.lastMapUpdateAt || elapsed >= APP_CONFIG.map.minimumRefreshIntervalMs) {
+          if (mapState.mapUpdateTimer) window.clearTimeout(mapState.mapUpdateTimer);
+          renderPendingMapLocation();
+        } else if (!mapState.mapUpdateTimer) {
+          mapState.mapUpdateTimer = window.setTimeout(
+            renderPendingMapLocation,
+            APP_CONFIG.map.minimumRefreshIntervalMs - elapsed
+          );
+        }
+      }
+
+      function resetSatelliteMap() {
+        if (mapState.mapUpdateTimer) window.clearTimeout(mapState.mapUpdateTimer);
+        if (mapState.reverseGeocodeTimer) window.clearTimeout(mapState.reverseGeocodeTimer);
+        mapState.mapUpdateTimer = null;
+        mapState.reverseGeocodeTimer = null;
+        mapState.pendingMapLocation = null;
+        mapState.pendingReverseLocation = null;
+        mapState.lastLocationKey = "";
+        mapState.lastLatitude = null;
+        mapState.lastLongitude = null;
+        mapState.lastMapUpdateAt = 0;
+        mapState.lastReverseGeocodeAt = 0;
+        mapState.lastReverseGeocodeKey = "";
+        mapState.currentReverseGeocodeKey = "";
+        mapState.reverseGeocodeRequestToken += 1;
+        elements.mapFrame.removeAttribute("src");
+        elements.mapFrame.hidden = true;
+        elements.mapPlaceholder.hidden = false;
+        setTextWithTooltip(elements.mapStatus, "Waiting for GPS");
+        elements.mapStatus.classList.remove("connected");
+        setTextWithTooltip(elements.mapCoordinates, "LAT --   LON --");
+        setTextWithTooltip(elements.mapAddress, "Waiting for GPS coordinates.");
+        elements.openMapLink.href = "#";
+        elements.openMapLink.setAttribute("aria-disabled", "true");
+      }
+
+      /**
+       * Converts a firmware TEL line into a normalized key/value record.
+       * Unknown fields are retained so later widgets can consume them without
+       * changing the protocol parser.
+       */
+      function extractTelemetryFields(rawLine) {
+        const telIndex = rawLine.indexOf("TEL,");
+        if (telIndex < 0) return null;
+
+        const telemetry = rawLine.slice(telIndex).trim();
+        const fields = {};
+        for (const token of telemetry.split(",").slice(1)) {
+          const separator = token.indexOf("=");
+          if (separator <= 0) continue;
+          const key = token.slice(0, separator).trim().toUpperCase();
+          const value = token.slice(separator + 1).trim();
+          fields[key] = value;
+        }
+        return fields;
+      }
+
+      function updateTelemetryPacketSummary() {
+        const { packetCount } = telemetryState;
+        elements.packetSummary.textContent = `${packetCount} ${packetCount === 1 ? "packet" : "packets"}`;
+        elements.packetSummary.title = `Total telemetry packets received: ${packetCount}`;
+      }
+
+      function batteryStateForVoltage(voltage) {
+        if (!Number.isFinite(voltage)) return "";
+        if (voltage >= 3.7) return "good";
+        if (voltage >= 3.4) return "warn";
+        return "bad";
+      }
+
+      function parseTelemetry(rawLine) {
+        const fields = extractTelemetryFields(rawLine);
+        if (!fields) return;
+
+        telemetryState.packetCount += 1;
+        updateTelemetryPacketSummary();
+
+        if (fields.BAT !== undefined) {
+          const battery = Number(fields.BAT);
+          const batteryLabel = Number.isFinite(battery) ? `${battery.toFixed(2)} V` : fields.BAT;
+          setMetric(elements.metricBattery, batteryLabel, batteryStateForVoltage(battery));
+        }
+
+        if (fields.PWR !== undefined) {
+          setMetric(elements.metricPower, fields.PWR, fields.PWR.toUpperCase() === "NORMAL" ? "good" : "warn");
+        }
+
+        if (fields.GPS !== undefined) {
+          setMetric(elements.metricGps, fields.GPS, fields.GPS.toUpperCase() === "FIX" ? "good" : "warn");
+        }
+
+        if (fields.NSAT !== undefined) setMetric(elements.metricSatellites, fields.NSAT);
+        if (fields.LAT !== undefined) setMetric(elements.metricLatitude, fields.LAT);
+        if (fields.LON !== undefined) setMetric(elements.metricLongitude, fields.LON);
+        if (fields.LAT !== undefined && fields.LON !== undefined) updateSatelliteMap(fields.LAT, fields.LON);
+        if (fields.ALT !== undefined) setMetric(elements.metricAltitude, `${fields.ALT} m`);
+        if (fields.N !== undefined) setMetric(elements.metricCycle, fields.N);
+      }
+
+      function resetTelemetry() {
+        telemetryState.packetCount = 0;
+        updateTelemetryPacketSummary();
+        for (const metric of telemetryMetricElements) setMetric(metric, "--");
+        resetSatelliteMap();
+      }
+
+      // ---------------------------------------------------------------------
+      // Settings form and reusable tab behavior
+      // ---------------------------------------------------------------------
+
+      function populateSettingsForm(source = settings) {
+        for (const [key, field] of Object.entries(elements.settingFields)) {
+          if (field.type === "checkbox") field.checked = Boolean(source[key]);
+          else field.value = String(source[key]);
+        }
+      }
+
+      function readSettingsForm() {
+        if (!elements.settingsForm.reportValidity()) return null;
+
+        const next = { ...DEFAULT_SETTINGS };
+
+        for (const [key, field] of Object.entries(elements.settingFields)) {
+          if (field.type === "checkbox") next[key] = field.checked;
+          else if (NUMERIC_SETTING_KEYS.has(key)) next[key] = Number(field.value);
+          else next[key] = field.value;
+        }
+        return next;
+      }
+
+      function activateTabs(buttons, panels, targetId, dataKey) {
+        for (const button of buttons) {
+          const active = button.dataset[dataKey] === targetId;
+          button.classList.toggle("active", active);
+          button.setAttribute("aria-selected", String(active));
+        }
+        for (const panel of panels) {
+          const active = panel.id === targetId;
+          panel.classList.toggle("active", active);
+          panel.hidden = !active;
+        }
+      }
+
+      function serialSettingsSignature(source) {
+        return [
+          source.baudRate, source.dataBits, source.stopBits, source.parity,
+          source.flowControl, source.serialBuffer, source.charset
+        ].join("|");
+      }
+
+      function openSettings() {
+        populateSettingsForm();
+        activateTabs(elements.settingsTabs, elements.settingsPanels, "serialSettings", "settingsTab");
+        elements.dialogControlStatus.textContent = serialState.port
+          ? "Select Refresh control lines to read CTS / DCD / DSR / RI."
+          : "Connect to read CTS / DCD / DSR / RI.";
+        elements.settingsDialog.showModal();
+      }
+
+      // ---------------------------------------------------------------------
+      // Browser integrations and serial control signals
+      // ---------------------------------------------------------------------
+
+      async function updateControlSignals(forceDialog = false) {
+        const showInCard = settings.showControlLines;
+        elements.controlLineStatus.hidden = !showInCard;
+
+        if (!serialState.port || typeof serialState.port.getSignals !== "function") {
+          const message = serialState.port
+            ? "Control-line status is unavailable for this device."
+            : "Connect to read CTS / DCD / DSR / RI.";
+          elements.dialogControlStatus.textContent = message;
+          if (showInCard) elements.controlLineStatus.textContent = message;
+          return;
+        }
+
+        if (!showInCard && !forceDialog) return;
+
+        try {
+          const signals = await serialState.port.getSignals();
+          const value = state => state ? "1" : "0";
+          const summary = `CTS=${value(signals.clearToSend)} | DCD=${value(signals.dataCarrierDetect)} | DSR=${value(signals.dataSetReady)} | RI=${value(signals.ringIndicator)}`;
+          elements.dialogControlStatus.textContent = summary;
+          if (showInCard) elements.controlLineStatus.textContent = summary;
+        } catch (error) {
+          const message = `Unable to read control lines: ${describeError(error)}`;
+          elements.dialogControlStatus.textContent = message;
+          if (showInCard) elements.controlLineStatus.textContent = message;
+        }
+      }
+
+      async function sendBreakSignal() {
+        if (!serialState.port || typeof serialState.port.setSignals !== "function") return;
+        const duration = Number(elements.settingFields.breakDuration.value) || settings.breakDuration;
+        elements.sendBreakBtn.disabled = true;
+        try {
+          await serialState.port.setSignals({ break: true });
+          await delay(duration);
+          await serialState.port.setSignals({ break: false });
+          appendTerminal(`SYSTEM: BREAK asserted for ${duration} ms.`, "SYS");
+        } catch (error) {
+          showNotice(`Unable to send BREAK: ${describeError(error)}`);
+          try { await serialState.port.setSignals({ break: false }); } catch (_) { /* Best effort. */ }
+        } finally {
+          elements.sendBreakBtn.disabled = !serialState.port;
+        }
+      }
+
+      async function requestWakeLockIfNeeded() {
+        if (
+          !settings.keepScreenAwake
+          || !serialState.port
+          || document.visibilityState !== "visible"
+          || !("wakeLock" in navigator)
+          || browserIntegrationState.wakeLock
+        ) return;
+        try {
+          browserIntegrationState.wakeLock = await navigator.wakeLock.request("screen");
+          browserIntegrationState.wakeLock.addEventListener("release", () => {
+            browserIntegrationState.wakeLock = null;
+          });
+        } catch (_) {
+          browserIntegrationState.wakeLock = null;
+        }
+      }
+
+      async function releaseWakeLock() {
+        if (!browserIntegrationState.wakeLock) return;
+        const currentLock = browserIntegrationState.wakeLock;
+        browserIntegrationState.wakeLock = null;
+        try { await currentLock.release(); } catch (_) { /* Already released. */ }
+      }
+
+      async function showConnectionNotificationIfNeeded() {
+        if (!settings.connectionNotification || !("Notification" in window)) return;
+        try {
+          let permission = Notification.permission;
+          if (permission === "default") permission = await Notification.requestPermission();
+          if (permission === "granted") {
+            browserIntegrationState.connectionNotification?.close();
+            browserIntegrationState.connectionNotification = new Notification("VyomSAT Alpha connected", {
+              body: `Ground station connected at ${settings.baudRate} baud.`
+            });
+          }
+        } catch (_) {
+          // Notifications may be blocked on file:// or non-secure origins.
+        }
+      }
+
+      function closeConnectionNotification() {
+        browserIntegrationState.connectionNotification?.close();
+        browserIntegrationState.connectionNotification = null;
+      }
+
+      function describePort(selectedPort) {
+        const info = typeof selectedPort.getInfo === "function" ? selectedPort.getInfo() : {};
+        const vendor = info.usbVendorId === undefined
+          ? "unknown"
+          : `0x${info.usbVendorId.toString(16).padStart(4, "0").toUpperCase()}`;
+        const product = info.usbProductId === undefined
+          ? "unknown"
+          : `0x${info.usbProductId.toString(16).padStart(4, "0").toUpperCase()}`;
+        return { vendor, product };
+      }
+
+      // ---------------------------------------------------------------------
+      // Connection UI and Web Serial transport
+      // ---------------------------------------------------------------------
+
+      function setConnectedUi(connected) {
+        const fullStatus = connected ? `Connected at ${settings.baudRate} baud` : "Disconnected";
+        const compactStatus = connected ? `${settings.baudRate} baud` : "Disconnected";
+        elements.connectionPill.classList.toggle("connected", connected);
+        elements.connectionText.textContent = fullStatus;
+        elements.connectionTextCompact.textContent = compactStatus;
+        elements.connectionPill.title = fullStatus;
+        elements.connectBtn.hidden = connected;
+        elements.disconnectBtn.hidden = !connected;
+        elements.connectBtn.disabled = connected;
+        elements.disconnectBtn.disabled = !connected;
+        elements.connectBtn.title = connected ? "Connected" : "Connect";
+        elements.disconnectBtn.title = connected ? "Disconnect" : "Disconnected";
+        for (const control of connectionOnlyControls) control.disabled = !connected;
+      }
+
+      function serialOptions() {
+        return {
+          baudRate: settings.baudRate,
+          dataBits: settings.dataBits,
+          stopBits: settings.stopBits,
+          parity: settings.parity,
+          flowControl: settings.flowControl,
+          bufferSize: settings.serialBuffer
+        };
+      }
+
+      function dataFormatLabel() {
+        const parity = settings.parity === "none" ? "N" : settings.parity.charAt(0).toUpperCase();
+        return `${settings.dataBits}-${parity}-${settings.stopBits}`;
+      }
+
+      function resetSerialState() {
+        serialState.port = null;
+        serialState.reader = null;
+        serialState.readTask = null;
+        serialState.keepReading = false;
+        serialState.isDisconnecting = false;
+      }
+
+      /**
+       * Acquires and always releases the Web Serial writer lock.
+       * Centralizing lock ownership prevents one write path from blocking
+       * subsequent commands or parser synchronization.
+       */
+      async function withSerialWriter(writeOperation) {
+        if (!serialState.port?.writable) throw new Error("The serial port is not writable.");
+        const writer = serialState.port.writable.getWriter();
+        try {
+          return await writeOperation(writer);
+        } finally {
+          writer.releaseLock();
+        }
+      }
+
+      async function connectSerial() {
+        if (!("serial" in navigator)) {
+          showNotice("Web Serial is not available in this browser. Open this page in a current version of Google Chrome or Microsoft Edge on a supported device.");
+          return;
+        }
+
+        if (serialState.port) return;
+        elements.connectBtn.disabled = true;
+        showNotice("");
+
+        try {
+          const selectedPort = await navigator.serial.requestPort();
+          await selectedPort.open(serialOptions());
+          serialState.port = selectedPort;
+          serialState.keepReading = true;
+          terminalState.pendingText = "";
+
+          const { vendor, product } = describePort(selectedPort);
+          const flowLabel = settings.flowControl === "hardware" ? "hardware flow control" : "no flow control";
+          elements.deviceTitle.textContent = "USB serial device connected";
+          elements.deviceDetail.textContent = `Vendor ${vendor} | Product ${product} | ${settings.baudRate} baud | ${dataFormatLabel()} | ${flowLabel}`;
+          setConnectedUi(true);
+          if (settings.connectionMessages) {
+            appendTerminal(`SYSTEM: Ground station connection opened at ${settings.baudRate} baud, ${dataFormatLabel()}, ${flowLabel}.`, "SYS");
+          }
+          serialState.readTask = readSerialLoop();
+          await synchronizeCommandParser();
+          await updateControlSignals();
+          await requestWakeLockIfNeeded();
+          await showConnectionNotificationIfNeeded();
+        } catch (error) {
+          elements.connectBtn.disabled = false;
+          if (error?.name !== "NotFoundError") {
+            showNotice(`Unable to open the selected device: ${describeError(error)}`);
+          }
+        }
+      }
+
+      /** Continuously decodes byte chunks and delegates complete lines. */
+      async function readSerialLoop() {
+        const decoder = new TextDecoder(settings.charset);
+
+        try {
+          while (serialState.keepReading && serialState.port?.readable) {
+            serialState.reader = serialState.port.readable.getReader();
+            try {
+              while (serialState.keepReading) {
+                const { value, done } = await serialState.reader.read();
+                if (done) break;
+                if (value?.byteLength) consumeIncomingText(decoder.decode(value, { stream: true }));
+              }
+            } finally {
+              serialState.reader.releaseLock();
+              serialState.reader = null;
+            }
+          }
+        } catch (error) {
+          if (serialState.keepReading) {
+            appendTerminal(`ERROR: Serial read failed: ${describeError(error)}`, "SYS");
+            showNotice("The connection stopped unexpectedly. Check the cable and reconnect the ground station device.");
+          }
+        } finally {
+          const finalText = decoder.decode();
+          if (finalText) consumeIncomingText(finalText);
+          flushPendingText();
+          if (!serialState.isDisconnecting && serialState.port) await closePortAfterReadFailure();
+        }
+      }
+
+      async function closePortAfterReadFailure() {
+        serialState.keepReading = false;
+        try {
+          if (serialState.port?.readable || serialState.port?.writable) await serialState.port.close();
+        } catch (_) {
+          // The operating system may already have closed a removed USB device.
+        }
+        resetSerialState();
+        await releaseWakeLock();
+        closeConnectionNotification();
+        setConnectedUi(false);
+        elements.deviceTitle.textContent = "USB serial device disconnected";
+        elements.deviceDetail.textContent = "Reconnect the ground station device to resume telemetry.";
+        elements.controlLineStatus.hidden = true;
+      }
+
+      async function disconnectSerial() {
+        if (!serialState.port || serialState.isDisconnecting) return;
+        serialState.isDisconnecting = true;
+        serialState.keepReading = false;
+        elements.disconnectBtn.disabled = true;
+
+        try {
+          if (serialState.reader) await serialState.reader.cancel();
+          if (serialState.readTask) await serialState.readTask;
+          if (serialState.port?.readable || serialState.port?.writable) await serialState.port.close();
+        } catch (error) {
+          showNotice(`The device closed with a warning: ${describeError(error)}`);
+        } finally {
+          flushPendingText();
+          await releaseWakeLock();
+          closeConnectionNotification();
+          resetSerialState();
+          setConnectedUi(false);
+          elements.deviceTitle.textContent = "No USB serial device selected";
+          elements.deviceDetail.textContent = "Connect the ground XBee S2C through the XBee Explorer USB adapter.";
+          elements.controlLineStatus.hidden = true;
+          if (settings.connectionMessages) appendTerminal("SYSTEM: Ground station connection closed.", "SYS");
+        }
+      }
+
+      /**
+       * Sends exactly one firmware command plus the configured line suffix.
+       * @returns {Promise<boolean>} true only when the complete payload was written.
+       */
+      async function sendCommand(command) {
+        if (!serialState.port?.writable) {
+          showNotice("Connect the ground station before sending a command.");
+          return false;
+        }
+
+        if (typeof command !== "string" || Array.from(command).length !== 1) {
+          showNotice("VyomSAT commands must contain exactly one character.");
+          return false;
+        }
+
+        showNotice("");
+        try {
+          const wireCommand = `${command}${resolvedTransmitSuffix()}`;
+          const encoder = new TextEncoder();
+          await withSerialWriter(async writer => {
+            if (settings.characterDelay > 0) {
+              for (const character of wireCommand) {
+                await writer.write(encoder.encode(character));
+                await delay(settings.characterDelay);
+              }
+            } else {
+              await writer.write(encoder.encode(wireCommand));
+            }
+            if (settings.lineDelay > 0) await delay(settings.lineDelay);
+          });
+          if (settings.localEcho) {
+            appendTerminal(`${command}  [${transmitSuffixLabel()}]`, "TX");
+          }
+          return true;
+        } catch (error) {
+          showNotice(`Unable to send the command: ${describeError(error)}`);
+          return false;
+        }
+      }
+
+      async function synchronizeCommandParser() {
+        if (!serialState.port?.writable) return;
+
+        try {
+          // An empty CR+LF safely clears any unfinished command that may have
+          // remained in the firmware buffer after a previous terminal session.
+          await withSerialWriter(writer => writer.write(new TextEncoder().encode(NEWLINE_SEQUENCES.crlf)));
+          if (settings.connectionMessages) appendTerminal("SYSTEM: Firmware command parser synchronized with CR+LF.", "SYS");
+        } catch (error) {
+          showNotice(`Connected, but command synchronization failed: ${describeError(error)}`);
+        }
+      }
+
+      function clearTerminal() {
+        elements.terminal.replaceChildren();
+        terminalState.lineCount = 0;
+        terminalState.pendingText = "";
+        terminalState.logEntries.length = 0;
+        resetTelemetry();
+
+        const placeholder = document.createElement("div");
+        placeholder.id = "terminalPlaceholder";
+        placeholder.className = "terminal-placeholder";
+        placeholder.innerHTML = "<div><strong>Terminal cleared</strong>New telemetry will appear here.</div>";
+        elements.terminal.appendChild(placeholder);
+        elements.terminalPlaceholder = placeholder;
+      }
+
+      function csvEscape(value) {
+        return `"${String(value).replaceAll('"', '""')}"`;
+      }
+
+      function downloadLog() {
+        if (!terminalState.logEntries.length) {
+          showNotice("There is no terminal data to download yet.");
+          return;
+        }
+
+        const rows = ["timestamp,direction,data"];
+        for (const entry of terminalState.logEntries) {
+          rows.push([entry.time, entry.direction, entry.text].map(csvEscape).join(","));
+        }
+
+        const blob = new Blob([rows.join("\r\n")], { type: "text/csv;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        const stamp = new Date().toISOString().replaceAll(":", "-").replace(".", "-");
+        link.href = url;
+        link.download = `vyomsat-alpha-ground-station-${stamp}.csv`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function showSampleData() {
+        SAMPLE_TERMINAL_LINES.forEach((sample, index) => {
+          window.setTimeout(
+            () => appendTerminal(sample, "RX"),
+            index * APP_CONFIG.terminal.sampleLineDelayMs
+          );
+        });
+      }
+
+      // ---------------------------------------------------------------------
+      // Event handlers
+      // ---------------------------------------------------------------------
+
+      function handleSidebarToggle() {
+        if (isMobileLayout()) {
+          setMobileSidebarOpen(false);
+        } else {
+          setSidebarCollapsed(!elements.dashboardShell.classList.contains("sidebar-collapsed"));
+        }
+      }
+
+      async function handleSettingsSubmit(event) {
+        event.preventDefault();
+        const nextSettings = readSettingsForm();
+        if (!nextSettings) return;
+
+        const reconnectRequired = serialSettingsSignature(settings) !== serialSettingsSignature(nextSettings);
+        settings = nextSettings;
+        saveSettings();
+        applyTerminalSettings();
+        elements.settingsDialog.close();
+
+        if (settings.keepScreenAwake) await requestWakeLockIfNeeded();
+        else await releaseWakeLock();
+
+        if (settings.connectionNotification) await showConnectionNotificationIfNeeded();
+        else closeConnectionNotification();
+
+        await updateControlSignals();
+        if (serialState.port && reconnectRequired) {
+          showNotice("Settings saved. Disconnect and reconnect to apply the device or charset changes.");
+        } else {
+          showNotice("");
+        }
+      }
+
+      async function handleManualCommandSubmit(event) {
+        event.preventDefault();
+        const command = elements.commandInput.value;
+        if (!command) {
+          showNotice("Enter one command character before selecting Send.");
+          return;
+        }
+        await sendCommand(command);
+        if (settings.clearInput) elements.commandInput.value = "";
+        else elements.commandInput.select();
+      }
+
+      async function handleQuickCommand(button) {
+        if (button.dataset.confirm && !window.confirm(button.dataset.confirm)) return;
+        const sent = await sendCommand(button.dataset.command);
+        if (sent && isMobileLayout()) {
+          setMobileSidebarOpen(false);
+          elements.mobileSidebarBtn.focus({ preventScroll: true });
+        }
+      }
+
+      function handleViewportResize() {
+        if (!isMobileLayout()) setMobileSidebarOpen(false);
+        if (!usesDockOverlay()) setDockOpen(false);
+      }
+
+      function bindTabEvents(buttons, panels, dataKey) {
+        for (const button of buttons) {
+          button.addEventListener("click", () => {
+            activateTabs(buttons, panels, button.dataset[dataKey], dataKey);
+          });
+        }
+      }
+
+      function bindEventHandlers() {
+        elements.connectBtn.addEventListener("click", connectSerial);
+        elements.disconnectBtn.addEventListener("click", disconnectSerial);
+        elements.settingsBtn.addEventListener("click", openSettings);
+        elements.sidebarToggleBtn.addEventListener("click", handleSidebarToggle);
+        elements.mobileSidebarBtn.addEventListener("click", () => {
+          setMobileSidebarOpen(!elements.dashboardShell.classList.contains("sidebar-open"));
+        });
+        elements.dockToggleBtn.addEventListener("click", () => {
+          setDockOpen(!elements.dashboardShell.classList.contains("dock-open"));
+        });
+        elements.dockCloseBtn.addEventListener("click", () => setDockOpen(false));
+        elements.panelBackdrop.addEventListener("click", closeOverlayPanels);
+        elements.clearBtn.addEventListener("click", clearTerminal);
+        elements.downloadBtn.addEventListener("click", downloadLog);
+        elements.sampleBtn.addEventListener("click", showSampleData);
+        elements.settingsCloseBtn.addEventListener("click", () => elements.settingsDialog.close());
+        elements.cancelSettingsBtn.addEventListener("click", () => elements.settingsDialog.close());
+        elements.resetSettingsBtn.addEventListener("click", () => populateSettingsForm(DEFAULT_SETTINGS));
+        elements.sendBreakBtn.addEventListener("click", sendBreakSignal);
+        elements.refreshSignalsBtn.addEventListener("click", () => updateControlSignals(true));
+        elements.settingsForm.addEventListener("submit", handleSettingsSubmit);
+        elements.commandForm.addEventListener("submit", handleManualCommandSubmit);
+
+        elements.settingsDialog.addEventListener("click", event => {
+          if (event.target === elements.settingsDialog) elements.settingsDialog.close();
+        });
+
+        for (const button of elements.quickCommands) {
+          button.addEventListener("click", () => handleQuickCommand(button));
+        }
+
+        bindTabEvents(elements.quickTabs, elements.commandPanels, "commandTab");
+        bindTabEvents(elements.settingsTabs, elements.settingsPanels, "settingsTab");
+
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible") requestWakeLockIfNeeded();
+        });
+        document.addEventListener("keydown", event => {
+          if (event.key === "Escape") closeOverlayPanels();
+        });
+        window.addEventListener("resize", handleViewportResize);
+      }
+
+      function initializeSerialSupport() {
+        if (!("serial" in navigator)) {
+          elements.connectBtn.disabled = true;
+          showNotice("Web Serial is not available in this browser. Open this page in a current version of Google Chrome or Microsoft Edge.");
+          return;
+        }
+
+        navigator.serial.addEventListener("disconnect", (event) => {
+          if (event.target === serialState.port && !serialState.isDisconnecting) {
+            if (settings.connectionMessages) appendTerminal("SYSTEM: The ground station device was disconnected.", "SYS");
+          }
+        });
+      }
+
+      // ---------------------------------------------------------------------
+      // Application bootstrap
+      // ---------------------------------------------------------------------
+
+      function initializeApplication() {
+        bindEventHandlers();
+        populateSettingsForm();
+        applyTerminalSettings();
+        initializeDashboardState();
+        setConnectedUi(false);
+        initializeDesignerTooltips();
+        initializeSerialSupport();
+      }
+
+      initializeApplication();
+    })();
+  </script>
+</body>
+</html>
