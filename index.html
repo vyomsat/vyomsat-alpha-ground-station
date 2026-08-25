@@ -361,6 +361,14 @@
       flex: 0 0 auto;
     }
 
+    .card-header-actions {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      flex: 0 0 auto;
+      gap: 7px;
+    }
+
     .card-icon {
       display: grid;
       place-items: center;
@@ -763,9 +771,12 @@
     .settings-device-panel {
       margin-bottom: 16px;
       padding: 12px;
-      border: 1px solid var(--line);
+      border: 1px solid rgba(0, 163, 255, 0.18);
       border-radius: 12px;
-      background: linear-gradient(145deg, rgba(86, 168, 255, 0.07), rgba(255, 121, 0, 0.035));
+      background:
+        linear-gradient(145deg, rgba(86, 168, 255, 0.075), rgba(255, 121, 0, 0.045)),
+        rgba(11, 20, 35, 0.58);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025), 0 8px 18px rgba(0, 0, 0, 0.10);
     }
 
     .settings-device-heading {
@@ -792,6 +803,8 @@
 
     .settings-device-panel .device-box {
       margin-top: 10px;
+      border-color: rgba(159, 184, 220, 0.18);
+      background: rgba(8, 15, 26, 0.70);
     }
 
     .command-button {
@@ -883,13 +896,23 @@
 
     .settings-dialog {
       width: min(760px, calc(100% - 28px));
-      max-height: min(800px, calc(100vh - 32px));
+      height: min(760px, calc(100vh - 32px));
+      height: min(760px, calc(100dvh - 32px));
+      max-height: calc(100vh - 32px);
+      max-height: calc(100dvh - 32px);
       padding: 0;
-      border: 1px solid rgba(159, 184, 220, 0.28);
+      border: 1px solid var(--widget-border);
       border-radius: 18px;
-      background: var(--panel);
+      background:
+        radial-gradient(circle at 8% 0%, rgba(255, 109, 0, 0.055), transparent 24rem),
+        radial-gradient(circle at 92% 10%, rgba(0, 163, 255, 0.065), transparent 28rem),
+        var(--panel);
       color: var(--text);
-      box-shadow: 0 28px 90px rgba(0, 0, 0, 0.58);
+      box-shadow:
+        0 0 0 1px rgba(0, 163, 255, 0.055),
+        0 0 34px rgba(0, 163, 255, 0.10),
+        0 0 54px rgba(255, 109, 0, 0.055),
+        0 28px 90px rgba(0, 0, 0, 0.62);
       overflow: hidden;
     }
 
@@ -900,54 +923,171 @@
 
     .settings-dialog form {
       display: flex;
-      max-height: min(800px, calc(100vh - 32px));
+      height: 100%;
+      min-height: 0;
       flex-direction: column;
+    }
+
+    .map-settings-dialog {
+      width: min(620px, calc(100% - 28px));
+      height: min(560px, calc(100vh - 32px));
+      height: min(560px, calc(100dvh - 32px));
+    }
+
+    .command-settings-dialog {
+      width: min(920px, calc(100% - 28px));
+      height: min(760px, calc(100vh - 32px));
+      height: min(760px, calc(100dvh - 32px));
     }
 
     .dialog-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 16px;
-      padding: 16px 18px;
-      border-bottom: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.018);
+      height: 64px;
+      min-height: 64px;
+      flex: 0 0 auto;
+      gap: 12px;
+      padding: 10px 14px;
+      border-bottom: 1px solid rgba(255, 109, 0, 0.22);
+      background:
+        linear-gradient(90deg, rgba(255, 109, 0, 0.055), transparent 32%, rgba(0, 163, 255, 0.025)),
+        var(--widget-header-gradient);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035), 0 7px 20px rgba(0, 0, 0, 0.14);
+    }
+
+    .dialog-heading {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      flex: 1 1 auto;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .dialog-heading-copy {
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .dialog-header-icon {
+      display: grid;
+      place-items: center;
+      width: 35px;
+      height: 35px;
+      flex: 0 0 35px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 11px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.10), 0 4px 14px rgba(0, 163, 255, 0.18);
+    }
+
+    .dialog-header-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .dialog-icon-connection {
+      color: #62c4ff;
+      background: linear-gradient(135deg, rgba(0, 163, 255, 0.30), rgba(255, 109, 0, 0.13));
+    }
+
+    .dialog-icon-map {
+      color: #75c5ff;
+      background: linear-gradient(145deg, rgba(55, 150, 255, 0.30), rgba(56, 230, 185, 0.08));
+    }
+
+    .dialog-icon-command {
+      color: var(--violet);
+      background: linear-gradient(145deg, rgba(179, 155, 255, 0.22), rgba(0, 163, 255, 0.10));
     }
 
     .dialog-header h2 {
+      max-width: 100%;
       margin: 0;
-      font-size: 17px;
+      overflow: hidden;
+      font-size: 15px;
+      letter-spacing: 0.015em;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .dialog-header p {
+      max-width: 100%;
       margin: 4px 0 0;
+      overflow: hidden;
       color: var(--muted);
       font-size: 11px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .dialog-close {
-      font-size: 20px;
-      line-height: 1;
+      width: 35px;
+      height: 35px;
+      flex: 0 0 35px;
+      border-color: rgba(159, 184, 220, 0.20);
+      background: rgba(255, 255, 255, 0.045);
+    }
+
+    .dialog-close:hover {
+      color: var(--rose);
+      border-color: rgba(255, 107, 138, 0.46);
+      background: rgba(255, 107, 138, 0.10);
+      transform: none;
     }
 
     .settings-tabs {
       display: flex;
+      flex: 0 0 auto;
       gap: 4px;
-      padding: 10px 16px 0;
-      border-bottom: 1px solid var(--line);
+      padding: 9px 14px 0;
+      border-bottom: 1px solid rgba(255, 109, 0, 0.16);
       overflow-x: auto;
-      background: #0d1727;
+      background:
+        linear-gradient(90deg, rgba(0, 163, 255, 0.045), transparent 48%, rgba(255, 109, 0, 0.035)),
+        rgba(10, 17, 28, 0.92);
+      box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.26);
     }
 
     .settings-tab {
       min-width: max-content;
-      border-radius: 8px 8px 0 0;
+      border: 1px solid transparent;
+      border-bottom: 0;
+      border-radius: 9px 9px 0 0;
+      font-family: "Orbitron", "Inter", sans-serif;
+      font-size: 10px;
+      letter-spacing: 0.035em;
+    }
+
+    .settings-tab:hover {
+      border-color: rgba(0, 163, 255, 0.16);
+      border-bottom-color: transparent;
+      background: rgba(0, 163, 255, 0.07);
+    }
+
+    .settings-tab.active {
+      border-color: rgba(255, 109, 0, 0.26);
+      border-bottom-color: transparent;
+      background: linear-gradient(180deg, rgba(255, 109, 0, 0.17), rgba(255, 109, 0, 0.07));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045), 0 -4px 14px rgba(255, 109, 0, 0.055);
     }
 
     .settings-panel-wrap {
+      flex: 1 1 auto;
       min-height: 0;
       padding: 17px 18px;
       overflow: auto;
+      background:
+        linear-gradient(rgba(0, 163, 255, 0.016) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 163, 255, 0.012) 1px, transparent 1px),
+        rgba(7, 13, 22, 0.18);
+      background-size: 28px 28px;
+      scrollbar-gutter: stable;
     }
 
     .settings-panel {
@@ -971,7 +1111,7 @@
 
     .form-field > span,
     .form-section-title {
-      color: var(--muted);
+      color: #9fb8dc;
       font-size: 10px;
       font-weight: 750;
       letter-spacing: 0.07em;
@@ -979,14 +1119,209 @@
     }
 
     .form-field input,
-    .form-field select {
+    .form-field select,
+    .command-editor-field input {
       width: 100%;
       min-height: 40px;
       padding: 8px 10px;
-      border: 1px solid var(--line);
+      border: 1px solid rgba(159, 184, 220, 0.20);
       border-radius: 9px;
+      background:
+        linear-gradient(180deg, rgba(0, 163, 255, 0.035), transparent 70%),
+        #0b1423;
+      color: var(--text);
+      box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.24);
+      transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+    }
+
+    .form-field input:hover,
+    .form-field select:hover,
+    .command-editor-field input:hover {
+      border-color: rgba(0, 163, 255, 0.38);
+    }
+
+    .form-field input:focus,
+    .form-field select:focus,
+    .command-editor-field input:focus {
+      border-color: rgba(0, 163, 255, 0.62);
+      outline: none;
+      background:
+        linear-gradient(180deg, rgba(0, 163, 255, 0.065), transparent 75%),
+        #0b1423;
+      box-shadow: inset 0 1px 5px rgba(0, 0, 0, 0.24), 0 0 0 3px rgba(0, 163, 255, 0.10), 0 0 16px rgba(0, 163, 255, 0.08);
+    }
+
+    .form-field select option {
       background: #0b1423;
       color: var(--text);
+    }
+
+    .range-field {
+      grid-column: 1 / -1;
+      padding: 14px;
+      border: 1px solid rgba(0, 163, 255, 0.18);
+      border-radius: 12px;
+      background:
+        linear-gradient(145deg, rgba(86, 168, 255, 0.075), rgba(255, 121, 0, 0.045)),
+        rgba(11, 20, 35, 0.58);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.025), 0 8px 18px rgba(0, 0, 0, 0.10);
+    }
+
+    .range-field .range-label {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .range-field output {
+      min-width: 58px;
+      padding: 5px 9px;
+      border: 1px solid rgba(255, 121, 0, 0.34);
+      border-radius: 999px;
+      background: rgba(255, 121, 0, 0.09);
+      color: var(--orange);
+      font-family: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+      font-size: 12px;
+      font-weight: 750;
+      letter-spacing: 0;
+      text-align: center;
+      text-transform: none;
+    }
+
+    .form-field input[type="range"] {
+      min-height: 28px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      accent-color: var(--orange);
+      cursor: pointer;
+    }
+
+    .map-settings-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .command-editor-panel {
+      display: none;
+    }
+
+    .command-editor-panel.active {
+      display: block;
+    }
+
+    .command-editor-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .command-editor-summary {
+      min-width: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .command-editor-toolbar .button {
+      flex: 0 0 auto;
+      border-radius: 999px;
+    }
+
+    .command-editor-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .command-editor-row {
+      display: grid;
+      grid-template-columns: minmax(150px, 0.9fr) minmax(220px, 1.5fr) 82px 34px;
+      align-items: end;
+      gap: 10px;
+      padding: 11px;
+      border: 1px solid rgba(0, 163, 255, 0.16);
+      border-radius: 12px;
+      background:
+        linear-gradient(145deg, rgba(86, 168, 255, 0.065), rgba(255, 121, 0, 0.035)),
+        rgba(11, 20, 35, 0.54);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02), 0 7px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .command-editor-row.invalid {
+      border-color: rgba(255, 123, 114, 0.72);
+      box-shadow: 0 0 0 3px rgba(255, 123, 114, 0.09);
+    }
+
+    .command-editor-field {
+      display: grid;
+      min-width: 0;
+      gap: 5px;
+    }
+
+    .command-editor-field > span {
+      overflow: hidden;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 750;
+      letter-spacing: 0.07em;
+      text-overflow: ellipsis;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .command-editor-field input {
+      min-width: 0;
+      min-height: 38px;
+      border-radius: 8px;
+    }
+
+    .command-editor-trigger input {
+      font-family: "JetBrains Mono", "Cascadia Mono", Consolas, monospace;
+      font-size: 15px;
+      font-weight: 750;
+      text-align: center;
+    }
+
+    .command-editor-remove {
+      width: 34px;
+      height: 38px;
+      color: var(--rose);
+    }
+
+    .command-editor-remove:hover {
+      border-color: rgba(255, 107, 138, 0.5);
+      background: rgba(255, 107, 138, 0.1);
+      color: #ff9daf;
+      transform: none;
+    }
+
+    .command-editor-empty {
+      padding: 28px 16px;
+      border: 1px dashed rgba(0, 163, 255, 0.28);
+      border-radius: 12px;
+      background: rgba(0, 163, 255, 0.025);
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    .settings-validation-message {
+      margin: 12px 0 0;
+      padding: 9px 11px;
+      border: 1px solid rgba(255, 123, 114, 0.4);
+      border-radius: 9px;
+      background: rgba(255, 123, 114, 0.08);
+      color: #ffb0aa;
+      font-size: 11px;
+      line-height: 1.45;
+    }
+
+    .settings-validation-message.info {
+      border-color: rgba(86, 168, 255, 0.38);
+      background: rgba(86, 168, 255, 0.08);
+      color: #9ed2ff;
     }
 
     .settings-checks {
@@ -1002,11 +1337,23 @@
       gap: 9px;
       min-height: 38px;
       padding: 8px 10px;
-      border: 1px solid var(--line);
+      border: 1px solid rgba(159, 184, 220, 0.18);
       border-radius: 9px;
-      background: #0b1423;
+      background:
+        linear-gradient(145deg, rgba(0, 163, 255, 0.045), rgba(255, 109, 0, 0.025)),
+        #0b1423;
       color: var(--muted);
       font-size: 12px;
+      cursor: pointer;
+      transition: border-color 140ms ease, background 140ms ease, color 140ms ease;
+    }
+
+    .settings-check:hover {
+      border-color: rgba(0, 163, 255, 0.34);
+      background:
+        linear-gradient(145deg, rgba(0, 163, 255, 0.08), rgba(255, 109, 0, 0.04)),
+        #0b1423;
+      color: var(--text);
     }
 
     .settings-check input {
@@ -1030,7 +1377,7 @@
       gap: 9px;
       margin-top: 14px;
       padding-top: 14px;
-      border-top: 1px solid var(--line);
+      border-top: 1px solid rgba(255, 109, 0, 0.14);
     }
 
     .control-status {
@@ -1043,15 +1390,32 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex: 0 0 auto;
       gap: 10px;
       padding: 13px 18px;
-      border-top: 1px solid var(--line);
-      background: #0d1727;
+      border-top: 1px solid rgba(255, 109, 0, 0.18);
+      background:
+        linear-gradient(90deg, rgba(0, 163, 255, 0.045), transparent 45%, rgba(255, 109, 0, 0.045)),
+        rgba(10, 17, 28, 0.94);
+      box-shadow: 0 -8px 20px rgba(0, 0, 0, 0.12);
     }
 
     .dialog-footer-actions {
       display: flex;
       gap: 9px;
+    }
+
+    .dialog-footer .button {
+      border-radius: 999px;
+    }
+
+    .dialog-footer .button-primary {
+      background: var(--brand-gradient);
+      box-shadow: 0 2px 12px rgba(0, 163, 255, 0.15), 0 2px 12px rgba(255, 109, 0, 0.22);
+    }
+
+    .dialog-footer .button-primary:hover:not(:disabled) {
+      box-shadow: 0 4px 20px rgba(0, 163, 255, 0.23), 0 4px 20px rgba(255, 109, 0, 0.30);
     }
 
     .telemetry-card {
@@ -1172,6 +1536,12 @@
       width: auto;
       padding: 6px 8px;
       font-size: 10px;
+    }
+
+    .location-card .card-header-actions .icon-button {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
     }
 
     .map-body {
@@ -1461,6 +1831,15 @@
       .command-tab-panel {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
+
+      .command-editor-row {
+        grid-template-columns: minmax(0, 1fr) 76px 34px;
+      }
+
+      .command-editor-name { grid-column: 1; grid-row: 1; }
+      .command-editor-trigger { grid-column: 2; grid-row: 1; }
+      .command-editor-remove { grid-column: 3; grid-row: 1; }
+      .command-editor-description { grid-column: 1 / -1; grid-row: 2; }
     }
 
     @media (max-width: 430px) {
@@ -1641,6 +2020,20 @@
       border-top: 1px solid var(--line);
     }
 
+    .sidebar-command-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sidebar-command-empty {
+      padding: 12px 8px;
+      color: var(--muted);
+      font-size: 10px;
+      line-height: 1.45;
+      text-align: center;
+    }
+
     .sidebar-group-heading {
       display: flex;
       align-items: center;
@@ -1663,6 +2056,13 @@
       stroke-width: 1.8;
       stroke-linecap: round;
       stroke-linejoin: round;
+    }
+
+    .sidebar-group-heading .command-settings-button {
+      width: 26px;
+      height: 26px;
+      margin-left: auto;
+      border-radius: 8px;
     }
 
     .command-sidebar .command-button {
@@ -1749,6 +2149,10 @@
 
     .sidebar-collapsed .sidebar-footer-symbol {
       display: inline;
+    }
+
+    .sidebar-collapsed .command-settings-button {
+      display: none;
     }
 
     .sidebar-collapsed .sidebar-toggle {
@@ -2305,6 +2709,20 @@
         font-size: 9px;
       }
 
+      .dashboard-shell .location-card .card-header-actions {
+        gap: 5px;
+      }
+
+      .dashboard-shell .location-card .card-header-actions .connection-pill {
+        padding: 5px 7px;
+        font-size: 9px;
+      }
+
+      .dashboard-shell .location-card .card-header-actions .icon-button {
+        width: 30px;
+        height: 30px;
+      }
+
       .command-sidebar {
         position: fixed;
         inset: 0 auto 0 0;
@@ -2389,6 +2807,75 @@
       .telemetry-dock .telemetry-grid {
         grid-template-columns: repeat(8, minmax(116px, 1fr));
         overflow-x: auto;
+      }
+
+      .settings-dialog {
+        width: calc(100% - 12px);
+        height: calc(100dvh - 12px);
+        max-height: calc(100dvh - 12px);
+        border-radius: 14px;
+      }
+
+      .dialog-header {
+        height: 52px;
+        min-height: 52px;
+        gap: 8px;
+        padding: 6px 9px;
+      }
+
+      .dialog-heading {
+        gap: 7px;
+      }
+
+      .dialog-header-icon {
+        width: 30px;
+        height: 30px;
+        flex-basis: 30px;
+        border-radius: 9px;
+      }
+
+      .dialog-header-icon svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      .dialog-header h2 {
+        font-size: 12px;
+        letter-spacing: 0.01em;
+      }
+
+      .dialog-header p {
+        margin-top: 2px;
+        font-size: 9px;
+      }
+
+      .dialog-close {
+        width: 30px;
+        height: 30px;
+        flex-basis: 30px;
+      }
+
+      .dialog-close svg {
+        width: 15px;
+        height: 15px;
+      }
+
+      .settings-tabs {
+        gap: 2px;
+        padding: 6px 8px 0;
+      }
+
+      .settings-tab {
+        padding: 7px 9px;
+        font-size: 9px;
+      }
+
+      .settings-panel-wrap {
+        padding: 11px 10px;
+      }
+
+      .dialog-footer {
+        padding: 9px 10px;
       }
 
     }
@@ -2643,50 +3130,25 @@
           <span id="quickCommandsLabel" hidden>Firmware quick commands</span>
 
           <div id="opsCommands" class="command-tab-panel active" role="tabpanel" aria-labelledby="opsTab">
-            <div class="sidebar-group-heading"><svg aria-hidden="true"><use href="#icon-mission"></use></svg><span>Ops Commands</span></div>
-            <button class="command-button" type="button" data-command="a" disabled>
-              <span class="command-label"><span class="command-icon command-icon-blue" aria-hidden="true"><svg><use href="#icon-compass"></use></svg></span><span class="command-copy">IMU Attitude<span class="command-description">Attitude and IMU report</span></span></span><kbd>a</kbd>
-            </button>
-            <button class="command-button" type="button" data-command="b" disabled>
-              <span class="command-label"><span class="command-icon command-icon-green" aria-hidden="true"><svg><use href="#icon-battery"></use></svg></span><span class="command-copy">Battery Read<span class="command-description">Battery voltage report</span></span></span><kbd>b</kbd>
-            </button>
-            <button class="command-button" type="button" data-command="c" disabled>
-              <span class="command-label"><span class="command-icon command-icon-violet" aria-hidden="true"><svg><use href="#icon-camera"></use></svg></span><span class="command-copy">Camera Capture<span class="command-description">Capture and store image</span></span></span><kbd>c</kbd>
-            </button>
-            <button class="command-button" type="button" data-command="g" disabled>
-              <span class="command-label"><span class="command-icon command-icon-teal" aria-hidden="true"><svg><use href="#icon-location"></use></svg></span><span class="command-copy">GPS Report<span class="command-description">Position and diagnostics</span></span></span><kbd>g</kbd>
-            </button>
-            <button class="command-button" type="button" data-command="h" disabled>
-              <span class="command-label"><span class="command-icon command-icon-green" aria-hidden="true"><svg><use href="#icon-telemetry"></use></svg></span><span class="command-copy">System Health<span class="command-description">Subsystem health summary</span></span></span><kbd>h</kbd>
-            </button>
-            <button class="command-button" type="button" data-command="i" disabled>
-              <span class="command-label"><span class="command-icon command-icon-gold" aria-hidden="true"><svg><use href="#icon-calibrate"></use></svg></span><span class="command-copy">IMU Calibration<span class="command-description">Keep the spacecraft still</span></span></span><kbd>i</kbd>
-            </button>
-            <button class="command-button command-caution" type="button" data-command="r" data-confirm="Reset the VyomSAT controller now?" disabled>
-              <span class="command-label"><span class="command-icon command-icon-rose" aria-hidden="true"><svg><use href="#icon-power"></use></svg></span><span class="command-copy">System Reset<span class="command-description">Reset the controller</span></span></span><kbd>r</kbd>
-            </button>
-            <button class="command-button" type="button" data-command="s" disabled>
-              <span class="command-label"><span class="command-icon command-icon-orange" aria-hidden="true"><svg><use href="#icon-storage"></use></svg></span><span class="command-copy">SD Data Log<span class="command-description">Start sensor logging</span></span></span><kbd>s</kbd>
-            </button>
+            <div class="sidebar-group-heading">
+              <svg aria-hidden="true"><use href="#icon-mission"></use></svg>
+              <span>Ops Commands</span>
+              <button id="opsCommandSettingsBtn" class="icon-button command-settings-button" type="button" data-open-command-settings="ops" aria-label="Customise Ops commands" title="Customise Ops commands">
+                <svg aria-hidden="true"><use href="#icon-settings"></use></svg>
+              </button>
+            </div>
+            <div id="opsCommandList" class="sidebar-command-list"></div>
           </div>
 
           <div id="testCommands" class="command-tab-panel" role="tabpanel" aria-labelledby="testsTab" hidden>
-            <div class="sidebar-group-heading"><svg aria-hidden="true"><use href="#icon-test"></use></svg><span>Test Commands</span></div>
-            <button class="command-button" type="button" data-command="t" disabled>
-              <span class="command-label"><span class="command-icon command-icon-blue" aria-hidden="true"><svg><use href="#icon-compass"></use></svg></span><span class="command-copy">ADCS Sensing<span class="command-description">Run ADCS sensing test</span></span></span><kbd>t</kbd>
-            </button>
-            <button class="command-button" type="button" data-command="u" disabled>
-              <span class="command-label"><span class="command-icon command-icon-violet" aria-hidden="true"><svg><use href="#icon-camera"></use></svg></span><span class="command-copy">Camera Test<span class="command-description">Run capture test</span></span></span><kbd>u</kbd>
-            </button>
-            <button class="command-button" type="button" data-command="v" disabled>
-              <span class="command-label"><span class="command-icon command-icon-teal" aria-hidden="true"><svg><use href="#icon-location"></use></svg></span><span class="command-copy">GPS Sensing<span class="command-description">Run GPS sensing test</span></span></span><kbd>v</kbd>
-            </button>
-            <button class="command-button" type="button" data-command="w" disabled>
-              <span class="command-label"><span class="command-icon command-icon-orange" aria-hidden="true"><svg><use href="#icon-storage"></use></svg></span><span class="command-copy">SD Card Test<span class="command-description">Write, read, and checksum</span></span></span><kbd>w</kbd>
-            </button>
-            <button class="command-button command-caution" type="button" data-command="x" data-confirm="Run the integrated mission test sequence?" disabled>
-              <span class="command-label"><span class="command-icon command-icon-rose" aria-hidden="true"><svg><use href="#icon-mission"></use></svg></span><span class="command-copy">Integrated Mission<span class="command-description">Run full mission test</span></span></span><kbd>x</kbd>
-            </button>
+            <div class="sidebar-group-heading">
+              <svg aria-hidden="true"><use href="#icon-test"></use></svg>
+              <span>Test Commands</span>
+              <button id="testCommandSettingsBtn" class="icon-button command-settings-button" type="button" data-open-command-settings="tests" aria-label="Customise Test commands" title="Customise Test commands">
+                <svg aria-hidden="true"><use href="#icon-settings"></use></svg>
+              </button>
+            </div>
+            <div id="testCommandList" class="sidebar-command-list"></div>
           </div>
         </div>
       </section>
@@ -2707,10 +3169,15 @@
               <span class="card-icon card-icon-location" aria-hidden="true"><svg><use href="#icon-location"></use></svg></span>
               <div>
                 <h2 id="locationTitle" title="Satellite Location">Satellite Location</h2>
-                <p title="Satellite view • refreshes after 1 m movement">Satellite view • refreshes after 1 m movement</p>
+                <p id="mapRefreshSummary" title="Satellite map refresh settings">Satellite view • refreshes after 10 m movement</p>
               </div>
             </div>
-            <div id="mapStatus" class="connection-pill" title="Waiting for GPS fix">Waiting for GPS</div>
+            <div class="card-header-actions">
+              <div id="mapStatus" class="connection-pill" title="Waiting for GPS fix">Waiting for GPS</div>
+              <button id="mapSettingsBtn" class="icon-button" type="button" aria-label="Open map settings" title="Map settings">
+                <svg aria-hidden="true"><use href="#icon-settings"></use></svg>
+              </button>
+            </div>
           </div>
           <div class="map-body">
             <div class="map-frame-wrap">
@@ -2815,7 +3282,7 @@
     <button id="panelBackdrop" class="panel-backdrop" type="button" aria-label="Close open panel"></button>
 
     <p class="footer-note">
-      Commands use one lower-case character plus the selected send newline (CR+LF by default), matching the VyomSAT Alpha firmware parser. Use this page in current Chrome over HTTPS or localhost. If opening the file directly does not expose Web Serial, run a local web server and open it from localhost.
+      Commands use one configured character plus the selected send newline (CR+LF by default), matching the VyomSAT Alpha firmware parser. Use this page in current Chrome over HTTPS or localhost. If opening the file directly does not expose Web Serial, run a local web server and open it from localhost.
       <br>&copy; 2026 VyomSat Aerospace Limited. Build mission-ready teams. Prove spacecraft readiness. Assure every mission.
     </p>
   </div>
@@ -2824,11 +3291,14 @@
   <dialog id="settingsDialog" class="settings-dialog" aria-labelledby="settingsDialogTitle">
     <form id="settingsForm">
       <div class="dialog-header">
-        <div>
-          <h2 id="settingsDialogTitle">Connection Settings</h2>
-          <p>VyomSAT defaults are preloaded. Serial changes take effect after reconnecting.</p>
+        <div class="dialog-heading">
+          <span class="dialog-header-icon dialog-icon-connection" aria-hidden="true"><svg><use href="#icon-radio"></use></svg></span>
+          <div class="dialog-heading-copy">
+            <h2 id="settingsDialogTitle" title="Connection Settings">Connection Settings</h2>
+            <p title="VyomSAT defaults are preloaded. Serial changes take effect after reconnecting.">VyomSAT defaults are preloaded. Serial changes take effect after reconnecting.</p>
+          </div>
         </div>
-        <button id="settingsCloseBtn" class="icon-button dialog-close" type="button" aria-label="Close settings">&times;</button>
+        <button id="settingsCloseBtn" class="icon-button dialog-close" type="button" aria-label="Close connection settings" title="Close connection settings"><svg aria-hidden="true"><use href="#icon-close"></use></svg></button>
       </div>
 
       <div class="settings-tabs" role="tablist" aria-label="Connection settings categories">
@@ -2969,7 +3439,7 @@
             <label class="settings-check"><input id="settingKeepScreenAwake" type="checkbox" checked><span>Keep screen on while connected</span></label>
             <label class="settings-check"><input id="settingConnectionNotification" type="checkbox"><span>Show connection notification</span></label>
           </div>
-          <p class="settings-help">Quick commands are fixed to the current VyomSAT firmware command table. Terminal logs can be saved with Download log.</p>
+          <p class="settings-help">Quick commands use the current VyomSAT firmware table by default and can be customised from the sidebar gear controls. Terminal logs can be saved with Download log.</p>
         </section>
       </div>
 
@@ -2978,6 +3448,111 @@
         <div class="dialog-footer-actions">
           <button id="cancelSettingsBtn" class="button button-secondary" type="button">Cancel</button>
           <button class="button button-primary" type="submit">Save settings</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Map presentation and refresh preferences. -->
+  <dialog id="mapSettingsDialog" class="settings-dialog map-settings-dialog" aria-labelledby="mapSettingsDialogTitle">
+    <form id="mapSettingsForm">
+      <div class="dialog-header">
+        <div class="dialog-heading">
+          <span class="dialog-header-icon dialog-icon-map" aria-hidden="true"><svg><use href="#icon-location"></use></svg></span>
+          <div class="dialog-heading-copy">
+            <h2 id="mapSettingsDialogTitle" title="Map Settings">Map Settings</h2>
+            <p title="Control when and how the latest satellite position is rendered.">Control when and how the latest satellite position is rendered.</p>
+          </div>
+        </div>
+        <button id="mapSettingsCloseBtn" class="icon-button dialog-close" type="button" aria-label="Close map settings" title="Close map settings"><svg aria-hidden="true"><use href="#icon-close"></use></svg></button>
+      </div>
+
+      <div class="settings-panel-wrap">
+        <div class="form-grid map-settings-grid">
+          <label class="form-field range-field" for="settingMapMovementThreshold">
+            <span class="range-label">
+              <span>Movement threshold</span>
+              <output id="settingMapMovementThresholdValue" for="settingMapMovementThreshold">10 m</output>
+            </span>
+            <input id="settingMapMovementThreshold" type="range" min="1" max="100" step="1" value="10" aria-describedby="mapThresholdHelp">
+          </label>
+
+          <label class="form-field range-field" for="settingMapZoom">
+            <span class="range-label">
+              <span>Satellite map zoom</span>
+              <output id="settingMapZoomValue" for="settingMapZoom">15</output>
+            </span>
+            <input id="settingMapZoom" type="range" min="10" max="20" step="1" value="15" aria-describedby="mapZoomHelp">
+          </label>
+
+          <label class="form-field range-field" for="settingMapMinimumRefreshInterval">
+            <span class="range-label">
+              <span>Minimum refresh interval</span>
+              <output id="settingMapMinimumRefreshIntervalValue" for="settingMapMinimumRefreshInterval">6 s</output>
+            </span>
+            <input id="settingMapMinimumRefreshInterval" type="range" min="1" max="60" step="1" value="6" aria-describedby="mapRefreshIntervalHelp">
+          </label>
+        </div>
+        <p id="mapThresholdHelp" class="settings-help">Coordinates update with every valid telemetry packet. The satellite map and approximate address refresh only after movement reaches the selected threshold.</p>
+        <p id="mapZoomHelp" class="settings-help">Zoom changes apply immediately to an already displayed satellite location.</p>
+        <p id="mapRefreshIntervalHelp" class="settings-help">The minimum interval prevents repeated map reloads when telemetry arrives rapidly.</p>
+      </div>
+
+      <div class="dialog-footer">
+        <button id="resetMapSettingsBtn" class="button button-secondary" type="button">Restore map defaults</button>
+        <div class="dialog-footer-actions">
+          <button id="cancelMapSettingsBtn" class="button button-secondary" type="button">Cancel</button>
+          <button class="button button-primary" type="submit">Save map settings</button>
+        </div>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Editable Ops and Test command definitions stored in the browser. -->
+  <dialog id="commandSettingsDialog" class="settings-dialog command-settings-dialog" aria-labelledby="commandSettingsDialogTitle">
+    <form id="commandSettingsForm">
+      <div class="dialog-header">
+        <div class="dialog-heading">
+          <span class="dialog-header-icon dialog-icon-command" aria-hidden="true"><svg><use href="#icon-terminal"></use></svg></span>
+          <div class="dialog-heading-copy">
+            <h2 id="commandSettingsDialogTitle" title="Command Customisation">Command Customisation</h2>
+            <p title="Edit command labels and firmware trigger characters, or add mission-specific commands.">Edit command labels and firmware trigger characters, or add mission-specific commands.</p>
+          </div>
+        </div>
+        <button id="commandSettingsCloseBtn" class="icon-button dialog-close" type="button" aria-label="Close command customisation" title="Close command customisation"><svg aria-hidden="true"><use href="#icon-close"></use></svg></button>
+      </div>
+
+      <div class="settings-tabs" role="tablist" aria-label="Command categories">
+        <button id="opsCommandEditorTab" class="settings-tab active" type="button" role="tab" aria-selected="true" aria-controls="opsCommandEditorPanel" data-command-settings-tab="opsCommandEditorPanel" data-command-category="ops">Ops Commands</button>
+        <button id="testCommandEditorTab" class="settings-tab" type="button" role="tab" aria-selected="false" aria-controls="testCommandEditorPanel" data-command-settings-tab="testCommandEditorPanel" data-command-category="tests">Test Commands</button>
+      </div>
+
+      <div class="settings-panel-wrap">
+        <section id="opsCommandEditorPanel" class="command-editor-panel active" role="tabpanel" aria-labelledby="opsCommandEditorTab">
+          <div class="command-editor-toolbar">
+            <span id="opsCommandEditorSummary" class="command-editor-summary">Ops commands</span>
+            <button class="button button-secondary button-small" type="button" data-add-command="ops">+ Add command</button>
+          </div>
+          <div id="opsCommandEditorList" class="command-editor-list"></div>
+        </section>
+
+        <section id="testCommandEditorPanel" class="command-editor-panel" role="tabpanel" aria-labelledby="testCommandEditorTab" hidden>
+          <div class="command-editor-toolbar">
+            <span id="testCommandEditorSummary" class="command-editor-summary">Test commands</span>
+            <button class="button button-secondary button-small" type="button" data-add-command="tests">+ Add command</button>
+          </div>
+          <div id="testCommandEditorList" class="command-editor-list"></div>
+        </section>
+
+        <p class="settings-help">Names and descriptions are interface labels. The trigger must be exactly one visible character and must be unique across both categories.</p>
+        <p id="commandSettingsNotice" class="settings-validation-message" role="alert" hidden></p>
+      </div>
+
+      <div class="dialog-footer">
+        <button id="resetCommandSettingsBtn" class="button button-secondary" type="button">Restore current tab defaults</button>
+        <div class="dialog-footer-actions">
+          <button id="cancelCommandSettingsBtn" class="button button-secondary" type="button">Cancel</button>
+          <button class="button button-primary" type="submit">Save commands</button>
         </div>
       </div>
     </form>
@@ -3017,6 +3592,7 @@
         }),
         storageKeys: Object.freeze({
           settings: "vyomsat-alpha-ground-station-settings-v2",
+          commands: "vyomsat-alpha-ground-station-commands-v1",
           sidebarCollapsed: "vyomsat-alpha-dashboard-sidebar-collapsed-v1"
         }),
         terminal: Object.freeze({
@@ -3025,8 +3601,12 @@
         }),
         map: Object.freeze({
           earthRadiusMeters: 6371008.8,
-          movementThresholdMeters: 1,
-          minimumRefreshIntervalMs: 6000,
+          movementThresholdMinimumMeters: 1,
+          movementThresholdMaximumMeters: 100,
+          zoomMinimum: 10,
+          zoomMaximum: 20,
+          refreshIntervalMinimumSeconds: 1,
+          refreshIntervalMaximumSeconds: 60,
           reverseGeocoderEndpoint: "https://nominatim.openstreetmap.org/reverse",
           reverseGeocodeMinimumIntervalMs: 30000,
           reverseGeocodeCacheLimit: 50
@@ -3042,7 +3622,8 @@
 
       const NUMERIC_SETTING_KEYS = new Set([
         "baudRate", "dataBits", "stopBits", "serialBuffer", "breakDuration",
-        "fontSize", "maxTerminalLines", "lineDelay", "characterDelay"
+        "fontSize", "maxTerminalLines", "lineDelay", "characterDelay",
+        "mapMovementThresholdMeters", "mapZoom", "mapMinimumRefreshIntervalSeconds"
       ]);
 
       const SAMPLE_TERMINAL_LINES = Object.freeze([
@@ -3079,9 +3660,45 @@
         characterDelay: 0,
         localEcho: true,
         clearInput: false,
+        mapMovementThresholdMeters: 10,
+        mapZoom: 15,
+        mapMinimumRefreshIntervalSeconds: 6,
         keepScreenAwake: true,
         connectionNotification: false
       });
+
+      const DEFAULT_COMMANDS = Object.freeze({
+        ops: Object.freeze([
+          Object.freeze({ id: "ops-imu-attitude", name: "IMU Attitude", description: "Attitude and IMU report", trigger: "a", icon: "icon-compass", tone: "blue" }),
+          Object.freeze({ id: "ops-battery-read", name: "Battery Read", description: "Battery voltage report", trigger: "b", icon: "icon-battery", tone: "green" }),
+          Object.freeze({ id: "ops-camera-capture", name: "Camera Capture", description: "Capture and store image", trigger: "c", icon: "icon-camera", tone: "violet" }),
+          Object.freeze({ id: "ops-gps-report", name: "GPS Report", description: "Position and diagnostics", trigger: "g", icon: "icon-location", tone: "teal" }),
+          Object.freeze({ id: "ops-system-health", name: "System Health", description: "Subsystem health summary", trigger: "h", icon: "icon-telemetry", tone: "green" }),
+          Object.freeze({ id: "ops-imu-calibration", name: "IMU Calibration", description: "Keep the spacecraft still", trigger: "i", icon: "icon-calibrate", tone: "gold" }),
+          Object.freeze({ id: "ops-system-reset", name: "System Reset", description: "Reset the controller", trigger: "r", icon: "icon-power", tone: "rose", caution: true, confirm: "Reset the VyomSAT controller now?" }),
+          Object.freeze({ id: "ops-sd-data-log", name: "SD Data Log", description: "Start sensor logging", trigger: "s", icon: "icon-storage", tone: "orange" })
+        ]),
+        tests: Object.freeze([
+          Object.freeze({ id: "test-adcs-sensing", name: "ADCS Sensing", description: "Run ADCS sensing test", trigger: "t", icon: "icon-compass", tone: "blue" }),
+          Object.freeze({ id: "test-camera", name: "Camera Test", description: "Run capture test", trigger: "u", icon: "icon-camera", tone: "violet" }),
+          Object.freeze({ id: "test-gps-sensing", name: "GPS Sensing", description: "Run GPS sensing test", trigger: "v", icon: "icon-location", tone: "teal" }),
+          Object.freeze({ id: "test-sd-card", name: "SD Card Test", description: "Write, read, and checksum", trigger: "w", icon: "icon-storage", tone: "orange" }),
+          Object.freeze({ id: "test-integrated-mission", name: "Integrated Mission", description: "Run full mission test", trigger: "x", icon: "icon-mission", tone: "rose", caution: true, confirm: "Run the integrated mission test sequence?" })
+        ])
+      });
+
+      const COMMAND_CATEGORIES = Object.freeze(["ops", "tests"]);
+      const COMMAND_CATEGORY_LABELS = Object.freeze({ ops: "Ops", tests: "Test" });
+      const COMMAND_EDITOR_PANEL_IDS = Object.freeze({
+        ops: "opsCommandEditorPanel",
+        tests: "testCommandEditorPanel"
+      });
+      const COMMAND_ICON_IDS = new Set([
+        "icon-compass", "icon-battery", "icon-camera", "icon-location",
+        "icon-telemetry", "icon-calibrate", "icon-power", "icon-storage",
+        "icon-mission", "icon-test"
+      ]);
+      const COMMAND_TONES = new Set(["blue", "green", "orange", "gold", "violet", "rose", "teal"]);
 
       function getRequiredElement(id) {
         const element = document.getElementById(id);
@@ -3130,13 +3747,6 @@
           panel.classList.add("active");
         }
 
-        for (const button of getElements("[data-command]")) {
-          const commandName = button.querySelector(".command-copy")?.firstChild?.textContent?.trim() || "Command";
-          const command = button.dataset.command || "";
-          button.title = `${commandName} (${command})`;
-          button.setAttribute("aria-label", `${commandName}, command ${command}`);
-        }
-
         const telemetryCard = getRequiredMatch(".telemetry-card");
         const telemetryDock = getRequiredElement("telemetryDock");
         telemetryDock.appendChild(telemetryCard);
@@ -3144,6 +3754,7 @@
 
       mountDashboardPanels();
       let settings = loadSettings();
+      let commandConfiguration = loadCommandConfiguration();
 
       const elements = {
         dashboardShell: getRequiredElement("dashboardShell"),
@@ -3162,6 +3773,7 @@
         connectBtn: getRequiredElement("connectBtn"),
         disconnectBtn: getRequiredElement("disconnectBtn"),
         settingsBtn: getRequiredElement("settingsBtn"),
+        mapSettingsBtn: getRequiredElement("mapSettingsBtn"),
         deviceTitle: getRequiredElement("deviceTitle"),
         deviceDetail: getRequiredElement("deviceDetail"),
         controlLineStatus: getRequiredElement("controlLineStatus"),
@@ -3173,9 +3785,14 @@
         clearBtn: getRequiredElement("clearBtn"),
         downloadBtn: getRequiredElement("downloadBtn"),
         sampleBtn: getRequiredElement("sampleBtn"),
-        quickCommands: getElements("[data-command]"),
+        quickCommandPanel: getRequiredMatch(".quick-command-panel"),
         quickTabs: getElements("[data-command-tab]"),
         commandPanels: getElements(".command-tab-panel"),
+        commandLists: {
+          ops: getRequiredElement("opsCommandList"),
+          tests: getRequiredElement("testCommandList")
+        },
+        commandSettingsButtons: getElements("[data-open-command-settings]"),
         settingsDialog: getRequiredElement("settingsDialog"),
         settingsForm: getRequiredElement("settingsForm"),
         settingsCloseBtn: getRequiredElement("settingsCloseBtn"),
@@ -3183,6 +3800,28 @@
         resetSettingsBtn: getRequiredElement("resetSettingsBtn"),
         settingsTabs: getElements("[data-settings-tab]"),
         settingsPanels: getElements(".settings-panel"),
+        mapSettingsDialog: getRequiredElement("mapSettingsDialog"),
+        mapSettingsForm: getRequiredElement("mapSettingsForm"),
+        mapSettingsCloseBtn: getRequiredElement("mapSettingsCloseBtn"),
+        cancelMapSettingsBtn: getRequiredElement("cancelMapSettingsBtn"),
+        resetMapSettingsBtn: getRequiredElement("resetMapSettingsBtn"),
+        commandSettingsDialog: getRequiredElement("commandSettingsDialog"),
+        commandSettingsForm: getRequiredElement("commandSettingsForm"),
+        commandSettingsCloseBtn: getRequiredElement("commandSettingsCloseBtn"),
+        cancelCommandSettingsBtn: getRequiredElement("cancelCommandSettingsBtn"),
+        resetCommandSettingsBtn: getRequiredElement("resetCommandSettingsBtn"),
+        commandSettingsTabs: getElements("[data-command-settings-tab]"),
+        commandSettingsPanels: getElements(".command-editor-panel"),
+        addCommandButtons: getElements("[data-add-command]"),
+        commandSettingsNotice: getRequiredElement("commandSettingsNotice"),
+        commandEditorLists: {
+          ops: getRequiredElement("opsCommandEditorList"),
+          tests: getRequiredElement("testCommandEditorList")
+        },
+        commandEditorSummaries: {
+          ops: getRequiredElement("opsCommandEditorSummary"),
+          tests: getRequiredElement("testCommandEditorSummary")
+        },
         sendBreakBtn: getRequiredElement("sendBreakBtn"),
         refreshSignalsBtn: getRequiredElement("refreshSignalsBtn"),
         dialogControlStatus: getRequiredElement("dialogControlStatus"),
@@ -3201,6 +3840,10 @@
         mapCoordinates: getRequiredElement("mapCoordinates"),
         mapAddress: getRequiredElement("mapAddress"),
         openMapLink: getRequiredElement("openMapLink"),
+        mapRefreshSummary: getRequiredElement("mapRefreshSummary"),
+        settingMapMovementThresholdValue: getRequiredElement("settingMapMovementThresholdValue"),
+        settingMapZoomValue: getRequiredElement("settingMapZoomValue"),
+        settingMapMinimumRefreshIntervalValue: getRequiredElement("settingMapMinimumRefreshIntervalValue"),
         settingFields: {
           baudRate: getRequiredElement("settingBaudRate"),
           dataBits: getRequiredElement("settingDataBits"),
@@ -3226,10 +3869,27 @@
           characterDelay: getRequiredElement("settingCharacterDelay"),
           localEcho: getRequiredElement("settingLocalEcho"),
           clearInput: getRequiredElement("settingClearInput"),
+          mapMovementThresholdMeters: getRequiredElement("settingMapMovementThreshold"),
+          mapZoom: getRequiredElement("settingMapZoom"),
+          mapMinimumRefreshIntervalSeconds: getRequiredElement("settingMapMinimumRefreshInterval"),
           keepScreenAwake: getRequiredElement("settingKeepScreenAwake"),
           connectionNotification: getRequiredElement("settingConnectionNotification")
         }
       };
+
+      const MAP_SETTING_KEYS = Object.freeze([
+        "mapMovementThresholdMeters",
+        "mapZoom",
+        "mapMinimumRefreshIntervalSeconds"
+      ]);
+
+      const mapSettingFields = Object.freeze(Object.fromEntries(
+        MAP_SETTING_KEYS.map(key => [key, elements.settingFields[key]])
+      ));
+
+      const connectionSettingFields = Object.freeze(Object.fromEntries(
+        Object.entries(elements.settingFields).filter(([key]) => !MAP_SETTING_KEYS.includes(key))
+      ));
 
       const connectionOnlyControls = [
         elements.commandInput,
@@ -3238,8 +3898,7 @@
         elements.refreshSignalsBtn,
         elements.sampleBtn,
         elements.clearBtn,
-        elements.downloadBtn,
-        ...elements.quickCommands
+        elements.downloadBtn
       ];
 
       const telemetryMetricElements = [
@@ -3399,9 +4058,22 @@
         window.addEventListener("resize", () => hideTooltip(true));
 
         const titleObserver = new MutationObserver(records => {
-          for (const record of records) absorbNativeTitle(record.target);
+          for (const record of records) {
+            if (record.type === "attributes") {
+              absorbNativeTitle(record.target);
+            } else {
+              for (const node of record.addedNodes) {
+                if (node instanceof Element) migrateTitles(node);
+              }
+            }
+          }
         });
-        titleObserver.observe(document.body, { subtree: true, attributes: true, attributeFilter: ["title"] });
+        titleObserver.observe(document.body, {
+          subtree: true,
+          childList: true,
+          attributes: true,
+          attributeFilter: ["title"]
+        });
       }
       const mapState = Object.seal({
         lastLocationKey: "",
@@ -3419,6 +4091,11 @@
         reverseGeocodeCache: new Map()
       });
 
+      const commandEditorState = Object.seal({
+        activeCategory: "ops",
+        draft: null
+      });
+
       // ---------------------------------------------------------------------
       // Persistence and dashboard layout
       // ---------------------------------------------------------------------
@@ -3430,6 +4107,18 @@
         for (const [key, defaultValue] of Object.entries(DEFAULT_SETTINGS)) {
           if (typeof candidate[key] === typeof defaultValue) normalized[key] = candidate[key];
         }
+        normalized.mapMovementThresholdMeters = Math.min(
+          APP_CONFIG.map.movementThresholdMaximumMeters,
+          Math.max(APP_CONFIG.map.movementThresholdMinimumMeters, Math.round(normalized.mapMovementThresholdMeters))
+        );
+        normalized.mapZoom = Math.min(
+          APP_CONFIG.map.zoomMaximum,
+          Math.max(APP_CONFIG.map.zoomMinimum, Math.round(normalized.mapZoom))
+        );
+        normalized.mapMinimumRefreshIntervalSeconds = Math.min(
+          APP_CONFIG.map.refreshIntervalMaximumSeconds,
+          Math.max(APP_CONFIG.map.refreshIntervalMinimumSeconds, Math.round(normalized.mapMinimumRefreshIntervalSeconds))
+        );
         return normalized;
       }
 
@@ -3447,6 +4136,87 @@
           localStorage.setItem(APP_CONFIG.storageKeys.settings, JSON.stringify(settings));
         } catch (_) {
           // Some file:// and privacy modes do not expose persistent storage.
+        }
+      }
+
+      function cloneCommandConfiguration(source = DEFAULT_COMMANDS) {
+        return Object.fromEntries(
+          COMMAND_CATEGORIES.map(category => [
+            category,
+            source[category].map(command => ({ ...command }))
+          ])
+        );
+      }
+
+      function createCommandId(category) {
+        const uniquePart = globalThis.crypto?.randomUUID?.()
+          || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+        return `${category}-${uniquePart}`;
+      }
+
+      function normalizeCommandConfiguration(candidate) {
+        if (!candidate || typeof candidate !== "object" || Array.isArray(candidate)) {
+          return cloneCommandConfiguration();
+        }
+
+        const normalized = {};
+        const usedIds = new Set();
+        const usedTriggers = new Set();
+
+        for (const category of COMMAND_CATEGORIES) {
+          const sourceCommands = Array.isArray(candidate[category])
+            ? candidate[category]
+            : DEFAULT_COMMANDS[category];
+          normalized[category] = [];
+
+          for (const sourceCommand of sourceCommands) {
+            if (!sourceCommand || typeof sourceCommand !== "object" || Array.isArray(sourceCommand)) continue;
+
+            const name = typeof sourceCommand.name === "string" ? sourceCommand.name.trim().slice(0, 60) : "";
+            const description = typeof sourceCommand.description === "string" ? sourceCommand.description.trim().slice(0, 120) : "";
+            const trigger = typeof sourceCommand.trigger === "string" ? sourceCommand.trigger.trim() : "";
+            if (!name || !description || Array.from(trigger).length !== 1 || usedTriggers.has(trigger)) continue;
+
+            const requestedId = typeof sourceCommand.id === "string" && /^[a-zA-Z0-9_-]{1,100}$/.test(sourceCommand.id)
+              ? sourceCommand.id
+              : createCommandId(category);
+            const id = usedIds.has(requestedId) ? createCommandId(category) : requestedId;
+            const defaultCommand = DEFAULT_COMMANDS[category].find(command => command.id === id);
+            const fallbackIcon = category === "ops" ? "icon-mission" : "icon-test";
+            const fallbackTone = category === "ops" ? "blue" : "violet";
+
+            normalized[category].push({
+              id,
+              name,
+              description,
+              trigger,
+              icon: COMMAND_ICON_IDS.has(sourceCommand.icon) ? sourceCommand.icon : (defaultCommand?.icon || fallbackIcon),
+              tone: COMMAND_TONES.has(sourceCommand.tone) ? sourceCommand.tone : (defaultCommand?.tone || fallbackTone),
+              caution: Boolean(defaultCommand?.caution),
+              confirm: defaultCommand?.confirm || ""
+            });
+            usedIds.add(id);
+            usedTriggers.add(trigger);
+          }
+        }
+
+        return normalized;
+      }
+
+      function loadCommandConfiguration() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(APP_CONFIG.storageKeys.commands) || "null");
+          return saved ? normalizeCommandConfiguration(saved) : cloneCommandConfiguration();
+        } catch (_) {
+          return cloneCommandConfiguration();
+        }
+      }
+
+      function saveCommandConfiguration() {
+        try {
+          localStorage.setItem(APP_CONFIG.storageKeys.commands, JSON.stringify(commandConfiguration));
+        } catch (_) {
+          // Custom commands remain active for this page session.
         }
       }
 
@@ -3503,6 +4273,262 @@
       function showNotice(message) {
         elements.supportNotice.textContent = message;
         elements.supportNotice.classList.toggle("visible", Boolean(message));
+      }
+
+      // ---------------------------------------------------------------------
+      // Quick command rendering and customisation
+      // ---------------------------------------------------------------------
+
+      function createCommandIcon(iconId) {
+        const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+        const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+        use.setAttribute("href", `#${iconId}`);
+        svg.appendChild(use);
+        return svg;
+      }
+
+      function createQuickCommandButton(command) {
+        const button = document.createElement("button");
+        button.className = `command-button${command.caution ? " command-caution" : ""}`;
+        button.type = "button";
+        button.dataset.command = command.trigger;
+        button.dataset.commandId = command.id;
+        if (command.confirm) button.dataset.confirm = command.confirm;
+        button.disabled = !serialState.port;
+        button.title = `${command.name} (${command.trigger})`;
+        button.setAttribute("aria-label", `${command.name}, command ${command.trigger}`);
+
+        const label = document.createElement("span");
+        label.className = "command-label";
+
+        const icon = document.createElement("span");
+        icon.className = `command-icon command-icon-${command.tone}`;
+        icon.setAttribute("aria-hidden", "true");
+        icon.appendChild(createCommandIcon(command.icon));
+
+        const copy = document.createElement("span");
+        copy.className = "command-copy";
+        copy.append(command.name);
+
+        const description = document.createElement("span");
+        description.className = "command-description";
+        description.textContent = command.description;
+        copy.appendChild(description);
+
+        const trigger = document.createElement("kbd");
+        trigger.textContent = command.trigger;
+        label.append(icon, copy);
+        button.append(label, trigger);
+        return button;
+      }
+
+      function renderQuickCommandCategory(category) {
+        const list = elements.commandLists[category];
+        const commands = commandConfiguration[category];
+        const fragment = document.createDocumentFragment();
+
+        if (!commands.length) {
+          const empty = document.createElement("div");
+          empty.className = "sidebar-command-empty";
+          empty.textContent = `No ${COMMAND_CATEGORY_LABELS[category]} commands configured.`;
+          fragment.appendChild(empty);
+        } else {
+          for (const command of commands) fragment.appendChild(createQuickCommandButton(command));
+        }
+
+        list.replaceChildren(fragment);
+      }
+
+      function renderQuickCommands() {
+        for (const category of COMMAND_CATEGORIES) renderQuickCommandCategory(category);
+      }
+
+      function createCommandEditorField(labelText, fieldName, command, className, maxLength) {
+        const label = document.createElement("label");
+        label.className = `command-editor-field ${className}`;
+
+        const labelCopy = document.createElement("span");
+        labelCopy.textContent = labelText;
+
+        const input = document.createElement("input");
+        input.type = "text";
+        input.value = command[fieldName];
+        input.maxLength = maxLength;
+        input.autocomplete = "off";
+        input.dataset.commandEditorField = fieldName;
+        input.dataset.commandId = command.id;
+        input.dataset.commandCategory = command.category;
+        input.placeholder = fieldName === "trigger" ? "a" : fieldName === "name" ? "Command name" : "What this command does";
+        if (fieldName === "trigger") {
+          input.inputMode = "text";
+          input.setAttribute("aria-label", `Trigger for ${command.name || "new command"}`);
+        }
+
+        label.append(labelCopy, input);
+        return label;
+      }
+
+      function createCommandEditorRow(category, command) {
+        const editorCommand = { ...command, category };
+        const row = document.createElement("div");
+        row.className = "command-editor-row";
+        row.dataset.commandId = command.id;
+        row.dataset.commandCategory = category;
+
+        row.appendChild(createCommandEditorField("Command name", "name", editorCommand, "command-editor-name", 60));
+        row.appendChild(createCommandEditorField("Description", "description", editorCommand, "command-editor-description", 120));
+        row.appendChild(createCommandEditorField("Trigger", "trigger", editorCommand, "command-editor-trigger", 1));
+
+        const removeButton = document.createElement("button");
+        removeButton.className = "icon-button command-editor-remove";
+        removeButton.type = "button";
+        removeButton.dataset.removeCommand = command.id;
+        removeButton.dataset.commandCategory = category;
+        removeButton.title = `Remove ${command.name || "command"}`;
+        removeButton.setAttribute("aria-label", `Remove ${command.name || "command"}`);
+        removeButton.appendChild(createCommandIcon("icon-close"));
+        row.appendChild(removeButton);
+        return row;
+      }
+
+      function renderCommandEditorCategory(category) {
+        const commands = commandEditorState.draft?.[category] || [];
+        const fragment = document.createDocumentFragment();
+
+        if (!commands.length) {
+          const empty = document.createElement("div");
+          empty.className = "command-editor-empty";
+          empty.textContent = `No ${COMMAND_CATEGORY_LABELS[category]} commands. Select Add command to create one.`;
+          fragment.appendChild(empty);
+        } else {
+          for (const command of commands) fragment.appendChild(createCommandEditorRow(category, command));
+        }
+
+        elements.commandEditorLists[category].replaceChildren(fragment);
+        const count = commands.length;
+        elements.commandEditorSummaries[category].textContent = `${count} ${COMMAND_CATEGORY_LABELS[category]} ${count === 1 ? "command" : "commands"}`;
+      }
+
+      function renderAllCommandEditors() {
+        for (const category of COMMAND_CATEGORIES) renderCommandEditorCategory(category);
+      }
+
+      function showCommandSettingsNotice(message = "", kind = "error") {
+        elements.commandSettingsNotice.textContent = message;
+        elements.commandSettingsNotice.hidden = !message;
+        elements.commandSettingsNotice.classList.toggle("info", Boolean(message) && kind === "info");
+      }
+
+      function activateCommandSettingsCategory(category) {
+        if (!COMMAND_CATEGORIES.includes(category)) return;
+        commandEditorState.activeCategory = category;
+        activateTabs(
+          elements.commandSettingsTabs,
+          elements.commandSettingsPanels,
+          COMMAND_EDITOR_PANEL_IDS[category],
+          "commandSettingsTab"
+        );
+      }
+
+      function openCommandSettings(category) {
+        commandEditorState.draft = cloneCommandConfiguration(commandConfiguration);
+        showCommandSettingsNotice();
+        renderAllCommandEditors();
+        activateCommandSettingsCategory(category);
+        if (isMobileLayout()) setMobileSidebarOpen(false);
+        elements.commandSettingsDialog.showModal();
+      }
+
+      function addCommandToDraft(category) {
+        if (!commandEditorState.draft || !COMMAND_CATEGORIES.includes(category)) return;
+        const command = {
+          id: createCommandId(category),
+          name: "",
+          description: "",
+          trigger: "",
+          icon: category === "ops" ? "icon-mission" : "icon-test",
+          tone: category === "ops" ? "blue" : "violet",
+          caution: false,
+          confirm: ""
+        };
+        commandEditorState.draft[category].push(command);
+        showCommandSettingsNotice();
+        renderCommandEditorCategory(category);
+
+        const rows = elements.commandEditorLists[category].querySelectorAll(".command-editor-row");
+        rows[rows.length - 1]?.querySelector('[data-command-editor-field="name"]')?.focus();
+      }
+
+      function removeCommandFromDraft(category, commandId) {
+        if (!commandEditorState.draft || !COMMAND_CATEGORIES.includes(category)) return;
+        commandEditorState.draft[category] = commandEditorState.draft[category]
+          .filter(command => command.id !== commandId);
+        showCommandSettingsNotice();
+        renderCommandEditorCategory(category);
+      }
+
+      function updateCommandDraftField(input) {
+        const category = input.dataset.commandCategory;
+        const commandId = input.dataset.commandId;
+        const field = input.dataset.commandEditorField;
+        const command = commandEditorState.draft?.[category]?.find(item => item.id === commandId);
+        if (!command || !["name", "description", "trigger"].includes(field)) return;
+        command[field] = input.value;
+        input.closest(".command-editor-row")?.classList.remove("invalid");
+        showCommandSettingsNotice();
+      }
+
+      function validateCommandDraft() {
+        const usedTriggers = new Map();
+        const configuration = cloneCommandConfiguration(commandEditorState.draft);
+
+        for (const category of COMMAND_CATEGORIES) {
+          for (const command of configuration[category]) {
+            command.name = command.name.trim();
+            command.description = command.description.trim();
+            command.trigger = command.trigger.trim();
+
+            if (!command.name) {
+              return { error: "Enter a name for every command.", category, commandId: command.id, field: "name" };
+            }
+            if (!command.description) {
+              return { error: `Enter a description for ${command.name}.`, category, commandId: command.id, field: "description" };
+            }
+            if (Array.from(command.trigger).length !== 1 || /\s/.test(command.trigger)) {
+              return { error: `Enter exactly one visible trigger character for ${command.name}.`, category, commandId: command.id, field: "trigger" };
+            }
+            if (usedTriggers.has(command.trigger)) {
+              return {
+                error: `Trigger ${command.trigger} is already assigned to ${usedTriggers.get(command.trigger)}. Choose a unique character.`,
+                category,
+                commandId: command.id,
+                field: "trigger"
+              };
+            }
+            usedTriggers.set(command.trigger, command.name);
+          }
+        }
+
+        return { configuration };
+      }
+
+      function focusInvalidCommand(validation) {
+        activateCommandSettingsCategory(validation.category);
+        const rows = Array.from(elements.commandEditorLists[validation.category].querySelectorAll(".command-editor-row"));
+        const row = rows.find(candidate => candidate.dataset.commandId === validation.commandId);
+        row?.classList.add("invalid");
+        row?.querySelector(`[data-command-editor-field="${validation.field}"]`)?.focus();
+      }
+
+      function restoreCurrentCommandDefaults() {
+        const category = commandEditorState.activeCategory;
+        if (!commandEditorState.draft || !COMMAND_CATEGORIES.includes(category)) return;
+        commandEditorState.draft[category] = DEFAULT_COMMANDS[category].map(command => ({ ...command }));
+        renderCommandEditorCategory(category);
+        showCommandSettingsNotice(
+          `${COMMAND_CATEGORY_LABELS[category]} command defaults restored in the editor. Select Save commands to apply them.`,
+          "info"
+        );
       }
 
       // ---------------------------------------------------------------------
@@ -3799,6 +4825,17 @@
         }
       }
 
+      function mapRefreshIntervalMs() {
+        return settings.mapMinimumRefreshIntervalSeconds * 1000;
+      }
+
+      function renderMapFrame(latitude, longitude) {
+        const query = encodeURIComponent(`${latitude},${longitude}`);
+        elements.mapFrame.src = `https://maps.google.com/maps?q=${query}&z=${settings.mapZoom}&t=k&output=embed`;
+        elements.mapFrame.hidden = false;
+        elements.mapPlaceholder.hidden = true;
+      }
+
       function renderPendingMapLocation() {
         mapState.mapUpdateTimer = null;
         if (!mapState.pendingMapLocation) return;
@@ -3807,15 +4844,44 @@
         mapState.pendingMapLocation = null;
         if (locationKey === mapState.lastLocationKey) return;
 
-        const query = encodeURIComponent(`${latitude},${longitude}`);
-        elements.mapFrame.src = `https://maps.google.com/maps?q=${query}&z=15&t=k&output=embed`;
-        elements.mapFrame.hidden = false;
-        elements.mapPlaceholder.hidden = true;
+        renderMapFrame(latitude, longitude);
         mapState.lastLocationKey = locationKey;
         mapState.lastLatitude = Number(latitude);
         mapState.lastLongitude = Number(longitude);
         mapState.lastMapUpdateAt = Date.now();
         scheduleReverseGeocode(mapState.lastLatitude, mapState.lastLongitude);
+      }
+
+      function schedulePendingMapRefresh() {
+        if (!mapState.pendingMapLocation) return;
+        if (mapState.mapUpdateTimer) window.clearTimeout(mapState.mapUpdateTimer);
+
+        const elapsed = Date.now() - mapState.lastMapUpdateAt;
+        const remainingDelay = Math.max(0, mapRefreshIntervalMs() - elapsed);
+        if (!mapState.lastMapUpdateAt || remainingDelay === 0) {
+          renderPendingMapLocation();
+        } else {
+          mapState.mapUpdateTimer = window.setTimeout(renderPendingMapLocation, remainingDelay);
+        }
+      }
+
+      function clearPendingMapRefresh() {
+        mapState.pendingMapLocation = null;
+        if (mapState.mapUpdateTimer) window.clearTimeout(mapState.mapUpdateTimer);
+        mapState.mapUpdateTimer = null;
+      }
+
+      function pendingMapLocationMeetsThreshold() {
+        if (!mapState.pendingMapLocation) return false;
+        if (mapState.lastLatitude === null || mapState.lastLongitude === null) return true;
+
+        const { latitude, longitude } = mapState.pendingMapLocation;
+        return distanceBetweenCoordinates(
+          mapState.lastLatitude,
+          mapState.lastLongitude,
+          latitude,
+          longitude
+        ) >= settings.mapMovementThresholdMeters;
       }
 
       /**
@@ -3842,25 +4908,13 @@
         const movementMeters = mapState.lastLatitude === null || mapState.lastLongitude === null
           ? Number.POSITIVE_INFINITY
           : distanceBetweenCoordinates(mapState.lastLatitude, mapState.lastLongitude, latitude, longitude);
-        if (movementMeters < APP_CONFIG.map.movementThresholdMeters) {
-          mapState.pendingMapLocation = null;
-          if (mapState.mapUpdateTimer) window.clearTimeout(mapState.mapUpdateTimer);
-          mapState.mapUpdateTimer = null;
+        if (movementMeters < settings.mapMovementThresholdMeters) {
+          clearPendingMapRefresh();
           return;
         }
 
         mapState.pendingMapLocation = { latitude, longitude, locationKey };
-
-        const elapsed = Date.now() - mapState.lastMapUpdateAt;
-        if (!mapState.lastMapUpdateAt || elapsed >= APP_CONFIG.map.minimumRefreshIntervalMs) {
-          if (mapState.mapUpdateTimer) window.clearTimeout(mapState.mapUpdateTimer);
-          renderPendingMapLocation();
-        } else if (!mapState.mapUpdateTimer) {
-          mapState.mapUpdateTimer = window.setTimeout(
-            renderPendingMapLocation,
-            APP_CONFIG.map.minimumRefreshIntervalMs - elapsed
-          );
-        }
+        schedulePendingMapRefresh();
       }
 
       function resetSatelliteMap() {
@@ -3963,24 +5017,46 @@
       // Settings form and reusable tab behavior
       // ---------------------------------------------------------------------
 
-      function populateSettingsForm(source = settings) {
-        for (const [key, field] of Object.entries(elements.settingFields)) {
+      function populateSettingFields(fields, source) {
+        for (const [key, field] of Object.entries(fields)) {
           if (field.type === "checkbox") field.checked = Boolean(source[key]);
           else field.value = String(source[key]);
         }
       }
 
-      function readSettingsForm() {
-        if (!elements.settingsForm.reportValidity()) return null;
+      function populateConnectionSettingsForm(source = settings) {
+        populateSettingFields(connectionSettingFields, source);
+      }
 
-        const next = { ...DEFAULT_SETTINGS };
+      function updateMapSettingOutputs() {
+        elements.settingMapMovementThresholdValue.value = `${elements.settingFields.mapMovementThresholdMeters.value} m`;
+        elements.settingMapZoomValue.value = elements.settingFields.mapZoom.value;
+        elements.settingMapMinimumRefreshIntervalValue.value = `${elements.settingFields.mapMinimumRefreshIntervalSeconds.value} s`;
+      }
 
-        for (const [key, field] of Object.entries(elements.settingFields)) {
-          if (field.type === "checkbox") next[key] = field.checked;
-          else if (NUMERIC_SETTING_KEYS.has(key)) next[key] = Number(field.value);
-          else next[key] = field.value;
+      function populateMapSettingsForm(source = settings) {
+        populateSettingFields(mapSettingFields, source);
+        updateMapSettingOutputs();
+      }
+
+      function readSettingFields(form, fields) {
+        if (!form.reportValidity()) return null;
+
+        const values = {};
+
+        for (const [key, field] of Object.entries(fields)) {
+          if (field.type === "checkbox") values[key] = field.checked;
+          else if (NUMERIC_SETTING_KEYS.has(key)) values[key] = Number(field.value);
+          else values[key] = field.value;
         }
-        return next;
+        return values;
+      }
+
+      function updateMapRefreshSummary() {
+        const threshold = settings.mapMovementThresholdMeters;
+        const interval = settings.mapMinimumRefreshIntervalSeconds;
+        setTextWithTooltip(elements.mapRefreshSummary, `Satellite view • refreshes after ${threshold} m movement`);
+        elements.mapRefreshSummary.title = `Movement threshold: ${threshold} m; minimum refresh interval: ${interval} s; zoom: ${settings.mapZoom}`;
       }
 
       function activateTabs(buttons, panels, targetId, dataKey) {
@@ -4004,12 +5080,17 @@
       }
 
       function openSettings() {
-        populateSettingsForm();
+        populateConnectionSettingsForm();
         activateTabs(elements.settingsTabs, elements.settingsPanels, "serialSettings", "settingsTab");
         elements.dialogControlStatus.textContent = serialState.port
           ? "Select Refresh control lines to read CTS / DCD / DSR / RI."
           : "Connect to read CTS / DCD / DSR / RI.";
         elements.settingsDialog.showModal();
+      }
+
+      function openMapSettings() {
+        populateMapSettingsForm();
+        elements.mapSettingsDialog.showModal();
       }
 
       // ---------------------------------------------------------------------
@@ -4136,6 +5217,7 @@
         elements.connectBtn.title = connected ? "Connected" : "Connect";
         elements.disconnectBtn.title = connected ? "Disconnect" : "Disconnected";
         for (const control of connectionOnlyControls) control.disabled = !connected;
+        for (const commandButton of getElements("[data-command]")) commandButton.disabled = !connected;
       }
 
       function serialOptions() {
@@ -4405,8 +5487,10 @@
 
       async function handleSettingsSubmit(event) {
         event.preventDefault();
-        const nextSettings = readSettingsForm();
-        if (!nextSettings) return;
+        const connectionValues = readSettingFields(elements.settingsForm, connectionSettingFields);
+        if (!connectionValues) return;
+
+        const nextSettings = normalizeSettings({ ...settings, ...connectionValues });
 
         const reconnectRequired = serialSettingsSignature(settings) !== serialSettingsSignature(nextSettings);
         settings = nextSettings;
@@ -4426,6 +5510,51 @@
         } else {
           showNotice("");
         }
+      }
+
+      function handleMapSettingsSubmit(event) {
+        event.preventDefault();
+        const mapValues = readSettingFields(elements.mapSettingsForm, mapSettingFields);
+        if (!mapValues) return;
+
+        const previousSettings = settings;
+        settings = normalizeSettings({ ...settings, ...mapValues });
+        saveSettings();
+        updateMapRefreshSummary();
+        elements.mapSettingsDialog.close();
+
+        if (mapState.pendingMapLocation && !pendingMapLocationMeetsThreshold()) {
+          clearPendingMapRefresh();
+        }
+
+        if (settings.mapZoom !== previousSettings.mapZoom) {
+          if (mapState.pendingMapLocation) {
+            renderPendingMapLocation();
+          } else if (mapState.lastLatitude !== null && mapState.lastLongitude !== null) {
+            renderMapFrame(mapState.lastLatitude, mapState.lastLongitude);
+            mapState.lastMapUpdateAt = Date.now();
+          }
+        } else if (mapState.pendingMapLocation) {
+          schedulePendingMapRefresh();
+        }
+
+        showNotice("");
+      }
+
+      function handleCommandSettingsSubmit(event) {
+        event.preventDefault();
+        const validation = validateCommandDraft();
+        if (validation.error) {
+          showCommandSettingsNotice(validation.error);
+          focusInvalidCommand(validation);
+          return;
+        }
+
+        commandConfiguration = normalizeCommandConfiguration(validation.configuration);
+        saveCommandConfiguration();
+        renderQuickCommands();
+        elements.commandSettingsDialog.close();
+        showNotice("Command customisations saved in this browser.");
       }
 
       async function handleManualCommandSubmit(event) {
@@ -4466,6 +5595,10 @@
         elements.connectBtn.addEventListener("click", connectSerial);
         elements.disconnectBtn.addEventListener("click", disconnectSerial);
         elements.settingsBtn.addEventListener("click", openSettings);
+        elements.mapSettingsBtn.addEventListener("click", openMapSettings);
+        for (const button of elements.commandSettingsButtons) {
+          button.addEventListener("click", () => openCommandSettings(button.dataset.openCommandSettings));
+        }
         elements.sidebarToggleBtn.addEventListener("click", handleSidebarToggle);
         elements.mobileSidebarBtn.addEventListener("click", () => {
           setMobileSidebarOpen(!elements.dashboardShell.classList.contains("sidebar-open"));
@@ -4480,19 +5613,54 @@
         elements.sampleBtn.addEventListener("click", showSampleData);
         elements.settingsCloseBtn.addEventListener("click", () => elements.settingsDialog.close());
         elements.cancelSettingsBtn.addEventListener("click", () => elements.settingsDialog.close());
-        elements.resetSettingsBtn.addEventListener("click", () => populateSettingsForm(DEFAULT_SETTINGS));
+        elements.resetSettingsBtn.addEventListener("click", () => populateConnectionSettingsForm(DEFAULT_SETTINGS));
+        elements.mapSettingsCloseBtn.addEventListener("click", () => elements.mapSettingsDialog.close());
+        elements.cancelMapSettingsBtn.addEventListener("click", () => elements.mapSettingsDialog.close());
+        elements.resetMapSettingsBtn.addEventListener("click", () => populateMapSettingsForm(DEFAULT_SETTINGS));
+        elements.commandSettingsCloseBtn.addEventListener("click", () => elements.commandSettingsDialog.close());
+        elements.cancelCommandSettingsBtn.addEventListener("click", () => elements.commandSettingsDialog.close());
+        elements.resetCommandSettingsBtn.addEventListener("click", restoreCurrentCommandDefaults);
+        for (const button of elements.addCommandButtons) {
+          button.addEventListener("click", () => addCommandToDraft(button.dataset.addCommand));
+        }
+        for (const tab of elements.commandSettingsTabs) {
+          tab.addEventListener("click", () => activateCommandSettingsCategory(tab.dataset.commandCategory));
+        }
+        for (const field of Object.values(mapSettingFields)) {
+          field.addEventListener("input", updateMapSettingOutputs);
+        }
         elements.sendBreakBtn.addEventListener("click", sendBreakSignal);
         elements.refreshSignalsBtn.addEventListener("click", () => updateControlSignals(true));
         elements.settingsForm.addEventListener("submit", handleSettingsSubmit);
+        elements.mapSettingsForm.addEventListener("submit", handleMapSettingsSubmit);
+        elements.commandSettingsForm.addEventListener("submit", handleCommandSettingsSubmit);
+        elements.commandSettingsForm.addEventListener("input", event => {
+          if (event.target instanceof Element && event.target.matches("[data-command-editor-field]")) {
+            updateCommandDraftField(event.target);
+          }
+        });
+        elements.commandSettingsForm.addEventListener("click", event => {
+          const removeButton = event.target instanceof Element
+            ? event.target.closest("[data-remove-command]")
+            : null;
+          if (removeButton) removeCommandFromDraft(removeButton.dataset.commandCategory, removeButton.dataset.removeCommand);
+        });
         elements.commandForm.addEventListener("submit", handleManualCommandSubmit);
 
         elements.settingsDialog.addEventListener("click", event => {
           if (event.target === elements.settingsDialog) elements.settingsDialog.close();
         });
+        elements.mapSettingsDialog.addEventListener("click", event => {
+          if (event.target === elements.mapSettingsDialog) elements.mapSettingsDialog.close();
+        });
+        elements.commandSettingsDialog.addEventListener("click", event => {
+          if (event.target === elements.commandSettingsDialog) elements.commandSettingsDialog.close();
+        });
 
-        for (const button of elements.quickCommands) {
-          button.addEventListener("click", () => handleQuickCommand(button));
-        }
+        elements.quickCommandPanel.addEventListener("click", event => {
+          const button = event.target instanceof Element ? event.target.closest("[data-command]") : null;
+          if (button && elements.quickCommandPanel.contains(button)) handleQuickCommand(button);
+        });
 
         bindTabEvents(elements.quickTabs, elements.commandPanels, "commandTab");
         bindTabEvents(elements.settingsTabs, elements.settingsPanels, "settingsTab");
@@ -4526,7 +5694,10 @@
 
       function initializeApplication() {
         bindEventHandlers();
-        populateSettingsForm();
+        renderQuickCommands();
+        populateConnectionSettingsForm();
+        populateMapSettingsForm();
+        updateMapRefreshSummary();
         applyTerminalSettings();
         initializeDashboardState();
         setConnectedUi(false);
